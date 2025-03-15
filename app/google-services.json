@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "973203116297",
+    "project_id": "app-turnos-4660a",
+    "storage_bucket": "app-turnos-4660a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973203116297:android:d44a1d2e55b276547d03d8",
+        "android_client_info": {
+          "package_name": "com.example.proyecto_turnos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCW6J9VF0Gkl4JYtRE-PTKVcukKTPgkbVc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973203116297:android:a4ad32f0cbcf27397d03d8",
+        "android_client_info": {
+          "package_name": "com.example.proyecto_turnos_c"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCW6J9VF0Gkl4JYtRE-PTKVcukKTPgkbVc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
