@@ -2,7 +2,7 @@ package com.example.proyecto_turnos_c.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Navbar = Color(0xFF191C88)
+val Navbar = Color(0xFFFF5722)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
 
