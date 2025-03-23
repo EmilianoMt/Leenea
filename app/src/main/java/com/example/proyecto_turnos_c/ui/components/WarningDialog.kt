@@ -87,7 +87,7 @@ fun WarningDialog(
 @Composable
 fun WarningDialogPreview() {
     WarningDialog(
-        onDismissRequest = { /** Aquí se cierra el diálogo */ },
+        onDismissRequest = { /** Accion que cierra el diálogo */ },
         onAccept = { /** Acción al aceptar */ },
         onCancel = { /** Acción al cancelar */ }
     )

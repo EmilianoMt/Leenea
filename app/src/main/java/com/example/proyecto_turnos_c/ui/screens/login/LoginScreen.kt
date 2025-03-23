@@ -57,7 +57,7 @@ fun LoginForm() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Placeholder circular para la imagen del perfil
+        // Imagen
         Box(
             modifier = Modifier
                 .size(200.dp)
