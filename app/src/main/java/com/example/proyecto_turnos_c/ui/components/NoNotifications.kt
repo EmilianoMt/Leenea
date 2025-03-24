@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun NoNotifications(modifier: Modifier = Modifier) {
+fun NoNotifications() {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

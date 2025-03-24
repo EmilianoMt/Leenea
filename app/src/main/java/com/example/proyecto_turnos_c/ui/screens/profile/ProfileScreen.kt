@@ -38,11 +38,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,7 +61,7 @@ fun ProfileScreen() {
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* Acción de retroceso */ }) {
+                    IconButton(onClick = { navController.navigate("home") }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBackIosNew,
                             contentDescription = "Back",
@@ -72,7 +74,7 @@ fun ProfileScreen() {
                 )
             )
         },
-        bottomBar = { NavBar() }
+        bottomBar = {  NavBar(navController = navController) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -130,5 +132,5 @@ fun ProfileDetail(label: String, detail: String) {
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen()
+    ProfileScreen(navController = rememberNavController())
 }

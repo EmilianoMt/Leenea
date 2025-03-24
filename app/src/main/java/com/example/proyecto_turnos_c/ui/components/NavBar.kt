@@ -13,47 +13,76 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 
-
-@Preview
 @Composable
-fun NavBar(modifier: Modifier = Modifier) {
-    var selectedItem by remember { mutableStateOf(0) }
-    val items = listOf("Home", "Events", "Profile")
+fun NavBar(navController: NavController, modifier: Modifier = Modifier) {
+    // Obtenemos la entrada actual del backstack para determinar la ruta actual.
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // Asociamos las rutas y etiquetas correspondientes a cada item.
+    val routes = listOf("home", "myEvents", "profile")
+    val labels = listOf("Home", "Mis Eventos", "Perfil")
     val selectedIcons = listOf(Icons.Filled.Home, Icons.Filled.Event, Icons.Filled.AccountCircle)
     val unselectedIcons = listOf(Icons.Outlined.Home, Icons.Outlined.Event, Icons.Outlined.AccountCircle)
+
+    // Determinamos el índice seleccionado en función de la ruta actual:
+    val selectedIndex = when (currentRoute) {
+        "home" -> 0
+        "myEvents" -> 1
+        "profile" -> 2
+        else -> 0
+    }
 
     NavigationBar(
         containerColor = Color(0xFF191C88),
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-            .then(modifier),
-
+            .then(modifier)
     ) {
-        items.forEachIndexed { index, item ->
+        labels.forEachIndexed { index, label ->
             NavigationBarItem(
                 icon = {
                     Icon(
-                        tint = if (selectedItem == index) Color(0xFFFFA73B) else Color(0xFFB0BEC5),
-                        imageVector = if (selectedItem == index) selectedIcons[index] else unselectedIcons[index],
-                        contentDescription = item
+                        imageVector = if (selectedIndex == index) selectedIcons[index] else unselectedIcons[index],
+                        contentDescription = label,
+                        tint = if (selectedIndex == index) Color(0xFFFFA73B) else Color(0xFFB0BEC5)
                     )
                 },
-                label = { Text(text = item ,
-                    color = if (selectedItem == index) Color(0xFFFFA73B) else MaterialTheme.colorScheme.onPrimary ) },
-                selected = selectedItem == index,
-                onClick = { selectedItem = index },
+                label = {
+                    Text(
+                        text = label,
+                        color = if (selectedIndex == index) Color(0xFFFFA73B)
+                        else MaterialTheme.colorScheme.onPrimary
+                    )
+                },
+                selected = selectedIndex == index,
+                onClick = {
+                    navController.navigate(routes[index]) {
+                        launchSingleTop = true
+                    }
+                },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = Color.Transparent
                 )
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NavBarPreview() {
+    NavBar(navController = rememberNavController())
 }
