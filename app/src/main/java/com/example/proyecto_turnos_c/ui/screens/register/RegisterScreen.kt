@@ -31,19 +31,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.R
-import com.example.proyecto_turnos_c.ui.screens.login.LoginForm
 
 @Composable
-fun Register() {
-    Scaffold {
-        it.calculateTopPadding()
-        RegisterForm()
+fun Register(navController: NavController) {
+    Scaffold { innerPadding ->
+        RegisterForm(navController = navController, modifier = Modifier.padding(innerPadding))
     }
 }
 
 @Composable
-fun RegisterForm() {
+fun RegisterForm(navController: NavController, modifier: Modifier = Modifier) {
     // Estados para los campos de texto
     val fullNameState = remember { mutableStateOf("") }
     val expedienteState = remember { mutableStateOf("") }
@@ -54,7 +54,7 @@ fun RegisterForm() {
     var confirmPasswordVisible by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
             .padding(top = 5.dp),
@@ -186,9 +186,9 @@ fun RegisterForm() {
             )
         )
         Spacer(modifier = Modifier.height(24.dp))
-        // Botón de registro
+        // Botón de registro: navega a "login"
         Button(
-            onClick = { /* Acción para registrarte */ },
+            onClick = { navController.navigate("login") },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA73B))
         ) {
@@ -201,7 +201,7 @@ fun RegisterForm() {
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFF191C88),
             modifier = Modifier.clickable {
-                /* Acción para navegar al login */
+                navController.navigate("login")
             }
         )
     }
@@ -210,5 +210,5 @@ fun RegisterForm() {
 @Preview(showBackground = true)
 @Composable
 fun RegisterPreview() {
-    Register()
+    Register(navController = rememberNavController())
 }

@@ -75,4 +75,25 @@ fun CircularImageCard(
     }
 }
 
+@Preview
+@Composable
+fun CircularImageCardPreview() {
+    CircularImageCard(
+        imageRes = R.drawable.event1,
+        title = "Evento 1",
+        description = "Descripción del evento 1",
+        isAvailable = true
+    )
+}
+
+@Preview
+@Composable
+fun CircularImageCardPreview2() {
+    CircularImageCard(
+        imageRes = R.drawable.event1,
+        title = "Evento 1",
+        description = "Descripción del evento 1",
+        isAvailable = false
+    )
+}
 

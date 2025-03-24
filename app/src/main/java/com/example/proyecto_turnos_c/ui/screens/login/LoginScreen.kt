@@ -1,6 +1,5 @@
 package com.example.proyecto_turnos_c.ui.screens.login
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,32 +31,34 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.R
 
 @Composable
-fun Login() {
-    Scaffold {
-        it.calculateTopPadding()
-        LoginForm()
+fun Login(navController: NavController) {
+    Scaffold { innerPadding ->
+        // Se pasa el NavController al formulario para poder navegar
+        LoginForm(navController = navController, modifier = Modifier.padding(innerPadding))
     }
 }
 
 @Composable
-fun LoginForm() {
+fun LoginForm(navController: NavController, modifier: Modifier = Modifier) {
     // Estados para los campos de texto
     val expedienteState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
             .padding(top = 5.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Imagen
+        // Imagen de perfil (placeholder)
         Box(
             modifier = Modifier
                 .size(200.dp)
@@ -76,10 +77,10 @@ fun LoginForm() {
         Text(
             text = "Iniciar sesión",
             style = MaterialTheme.typography.titleLarge,
-            color =  Color(0xFF191C88),
+            color = Color(0xFF191C88)
         )
         Spacer(modifier = Modifier.height(24.dp))
-        // Campo de texto para el correo electrónico
+        // Campo para correo electrónico
         OutlinedTextField(
             value = expedienteState.value,
             onValueChange = { expedienteState.value = it },
@@ -96,7 +97,7 @@ fun LoginForm() {
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
-        // Campo de texto para Contraseña
+        // Campo para Contraseña
         OutlinedTextField(
             value = passwordState.value,
             onValueChange = { passwordState.value = it },
@@ -122,22 +123,22 @@ fun LoginForm() {
             )
         )
         Spacer(modifier = Modifier.height(24.dp))
-        // Botón de inicio de sesión en color naranja
+        // Botón de inicio de sesión: navega a "home"
         Button(
-            onClick = { /* Acción de iniciar sesión */ },
+            onClick = { navController.navigate("home") },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA73B))
         ) {
             Text(text = "Iniciar sesión", color = Color.White)
         }
         Spacer(modifier = Modifier.height(16.dp))
-        // Enlace de registro
+        // Enlace de registro que navega a la pantalla "register"
         Text(
             text = "Registrate",
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFF191C88),
             modifier = Modifier.clickable {
-                /* Acción para ir a la pantalla de registro */
+                navController.navigate("register")
             }
         )
     }
@@ -146,5 +147,5 @@ fun LoginForm() {
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
-    Login()
+    Login(navController = rememberNavController())
 }

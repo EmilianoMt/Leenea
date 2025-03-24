@@ -1,82 +1,61 @@
-package com.example.proyecto_turnos_c.ui.screens
+package com.example.proyecto_turnos_c.ui.components
 
-import NavBar
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.proyecto_turnos_c.R
-import com.example.proyecto_turnos_c.ui.components.CircularImageCard
-import com.example.proyecto_turnos_c.ui.components.EventCard
 
-
-@Preview
 @Composable
-fun HomeScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize()
+fun SplashScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Column(
-            modifier = Modifier.align(Alignment.TopCenter)
-        ) {
-
-
-            ElevatedCard(
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 10.dp
-                ),
-                modifier = Modifier
-                    .size(width = 400.dp, height = 600.dp)
-            ) {
-                EventCard(
-                    title = "Sala de usos múltiples",
-                    subtitle = "Alta de materias 2025-1",
-                    iconButtonAction = { /* Acción personalizada al presionar el botón */ }
-                )
-
-                Column {
-                    CircularImageCard(
-                        imageRes = R.drawable.event1,
-                        title = "Woman IT Registro",
-                        description = "SOMOS UAQ",
-                        isAvailable = true
-                    )
-                    CircularImageCard(
-                        imageRes = R.drawable.event1,
-                        title = "Registro materias 2025-1",
-                        description = "Detalles de las materias",
-                        isAvailable = false
-                    )
-                    CircularImageCard(
-                        imageRes = R.drawable.event1,
-                        title = "Registro recurso materias",
-                        description = "Materias 2025-1",
-                        isAvailable = false
-                    )
-                }
-                Text(
-                    text = "Contenido de la tarjeta",
-                    color = Color.Black
-                )
-            }
-        }
-
-        NavBar(
+        // Círculo de fondo para el ícono
+        Box(
             modifier = Modifier
-            .align(Alignment.BottomCenter)
+                .size(200.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF191C88)), // Fondo gris claro
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                contentDescription = "Sin notificaciones",
+                modifier = Modifier.size(200.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        // Texto del mensaje
+        Text(
+            text = "Turnos App",
+            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
+            color = Color.Gray,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun SplashScreenPreview() {
+    SplashScreen()
+}

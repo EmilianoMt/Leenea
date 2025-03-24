@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -32,22 +33,23 @@ fun EventAnnouncementCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(500.dp)
+            .height(550.dp)
             .padding(16.dp),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Column {
+        Column(modifier = Modifier.padding(16.dp)) {
             // Imagen
             Image(
                 painter = painterResource(id = imageRes),
                 contentDescription = "Imagen del evento",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(130.dp),
+                    .height(130.dp)
+                    .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(18.dp))
             // Sección de información con filas divididas
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 InfoRow(label = "Fecha y Hora:", info = fechaHora)
@@ -93,16 +95,19 @@ fun InfoRow(label: String, info: String) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray,
-            modifier = Modifier.weight(1f)
+            color = Color.Black,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Start
+
         )
         // Columna de la información
         Text(
             text = info,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Black,
+            color = Color.Gray,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End
+
         )
     }
 }
