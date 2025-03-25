@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -31,20 +33,29 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.R
+import com.example.proyecto_turnos_c.viewmodels.LoginViewModel
 
 @Composable
-fun Login(navController: NavController) {
+fun Login(navController: NavController, loginViewModel: LoginViewModel = viewModel()) {
     Scaffold { innerPadding ->
-        // Se pasa el NavController al formulario para poder navegar
-        LoginForm(navController = navController, modifier = Modifier.padding(innerPadding))
+        val loginState = loginViewModel.loginState
+
+        LaunchedEffect(key1 = loginState.success) {
+            if (loginState.success) {
+                navController.navigate("home")
+            }
+        }
+
+        LoginForm(navController = navController, modifier = Modifier.padding(innerPadding), loginViewModel = loginViewModel)
     }
 }
 
 @Composable
-fun LoginForm(navController: NavController, modifier: Modifier = Modifier) {
+fun LoginForm(navController: NavController, loginViewModel: LoginViewModel ,modifier: Modifier = Modifier) {
     // Estados para los campos de texto
     val expedienteState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
@@ -123,9 +134,20 @@ fun LoginForm(navController: NavController, modifier: Modifier = Modifier) {
             )
         )
         Spacer(modifier = Modifier.height(24.dp))
+
+        if (loginViewModel.loginState.loading){
+            CircularProgressIndicator(modifier = Modifier
+                .padding(16.dp))
+        }
+
         // Botón de inicio de sesión: navega a "home"
         Button(
-            onClick = { navController.navigate("home") },
+            onClick = {
+                loginViewModel.loginUser(
+                    expedienteState.value,
+                    passwordState.value
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA73B))
         ) {
