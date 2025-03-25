@@ -83,11 +83,13 @@ fun ProfileScreen(navController: NavController) {
                 .padding(horizontal = 16.dp, vertical = 24.dp)
 
         ) {
-            ProfileDetail(label = "Nombre completo", detail = "Ejemplino Testando de la Prueba Ramírez")
+            ProfileDetail(label = "Nombre completo", detail = "Ejemplo Rodriguez" +
+                    "" +
+                    "")
             Spacer(modifier = Modifier.height(16.dp))
             ProfileDetail(label = "Expediente", detail = "564862")
             Spacer(modifier = Modifier.height(16.dp))
-            ProfileDetail(label = "Correo", detail = "ejemplinoPR@mail.com")
+            ProfileDetail(label = "Correo", detail = "ejemploPR@mail.com")
         }
     }
 }
