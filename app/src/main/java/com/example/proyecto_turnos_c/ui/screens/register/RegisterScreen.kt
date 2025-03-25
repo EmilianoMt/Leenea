@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -31,19 +33,29 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.R
+import com.example.proyecto_turnos_c.viewmodels.RegisterViewModel
 
 @Composable
-fun Register(navController: NavController) {
+fun Register(navController: NavController, registerViewModel: RegisterViewModel = viewModel()) {
+    val registerState = registerViewModel.registerState
+
+    LaunchedEffect(key1 = registerState.success) {
+        if (registerState.success) {
+            navController.navigate("login")
+        }
+    }
+
     Scaffold { innerPadding ->
-        RegisterForm(navController = navController, modifier = Modifier.padding(innerPadding))
+        RegisterForm(navController = navController, registerViewModel = registerViewModel ,modifier = Modifier.padding(innerPadding))
     }
 }
 
 @Composable
-fun RegisterForm(navController: NavController, modifier: Modifier = Modifier) {
+fun RegisterForm(navController: NavController, registerViewModel: RegisterViewModel ,modifier: Modifier = Modifier) {
     // Estados para los campos de texto
     val fullNameState = remember { mutableStateOf("") }
     val expedienteState = remember { mutableStateOf("") }
@@ -186,9 +198,21 @@ fun RegisterForm(navController: NavController, modifier: Modifier = Modifier) {
             )
         )
         Spacer(modifier = Modifier.height(24.dp))
+
+        if (registerViewModel.registerState.loading){
+            CircularProgressIndicator(modifier = Modifier
+                .padding(16.dp))
+        }
         // Botón de registro: navega a "login"
         Button(
-            onClick = { navController.navigate("login") },
+            onClick = {
+                registerViewModel.registerUser(
+                    fullNameState.value,
+                    emailState.value,
+                    passwordState.value,
+                    expedienteState.value
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA73B))
         ) {
@@ -204,6 +228,20 @@ fun RegisterForm(navController: NavController, modifier: Modifier = Modifier) {
                 navController.navigate("login")
             }
         )
+        if (registerViewModel.registerState.error != null){
+            Text(
+                text = registerViewModel.registerState.error!!,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+//        if (passwordState != confirmPasswordState){
+//            Text(
+//                text = "Las contraseñas no coinciden",
+//                color = Color.Red,
+//                modifier = Modifier.padding(top = 8.dp)
+//            )
+//        }
     }
 }
 
