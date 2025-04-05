@@ -105,8 +105,8 @@ fun MyEventsScreen(navController: NavController) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowForward,
                             contentDescription = "Ver más",
-                            tint = Color.Gra
-                        )y
+                            tint = Color.Gray
+                        )
                     }
                 }
             }
