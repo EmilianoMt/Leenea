@@ -17,10 +17,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.R
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -28,12 +30,11 @@ fun SplashScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Círculo de fondo para el ícono
         Box(
             modifier = Modifier
                 .size(200.dp)
                 .clip(CircleShape)
-                .background(Color(0xFF191C88)), // Fondo gris claro
+                .background(Color(0xFF191C88)),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -43,7 +44,6 @@ fun SplashScreen() {
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        // Texto del mensaje
         Text(
             text = "Turnos App",
             style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
@@ -57,5 +57,5 @@ fun SplashScreen() {
 @Preview(showBackground = true)
 @Composable
 fun SplashScreenPreview() {
-    SplashScreen()
+    SplashScreen(navController = rememberNavController())
 }

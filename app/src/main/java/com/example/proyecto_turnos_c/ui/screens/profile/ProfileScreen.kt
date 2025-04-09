@@ -1,54 +1,41 @@
 package com.example.proyecto_turnos_c.ui.screens.profile
 
 import NavBar
-import androidx.compose.foundation.background
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Event
-import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.proyecto_turnos_c.viewmodels.ProfileViewModel
 
-
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = viewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
+
                     Box(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center
@@ -74,22 +61,48 @@ fun ProfileScreen(navController: NavController) {
                 )
             )
         },
-        bottomBar = {  NavBar(navController = navController) }
+        bottomBar = { NavBar(navController = navController) }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp, vertical = 24.dp)
-
         ) {
-            ProfileDetail(label = "Nombre completo", detail = "Ejemplo Rodriguez" +
-                    "" +
-                    "")
-            Spacer(modifier = Modifier.height(16.dp))
-            ProfileDetail(label = "Expediente", detail = "564862")
-            Spacer(modifier = Modifier.height(16.dp))
-            ProfileDetail(label = "Correo", detail = "ejemploPR@mail.com")
+            when {
+                viewModel.isLoading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+                viewModel.userProfile != null -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 24.dp)
+                    ) {
+                        ProfileDetail(
+                            label = "Nombre completo",
+                            detail = viewModel.userProfile!!.fullName
+                        )
+                        Spacer(modifier = Modifier.height(26.dp))
+                        ProfileDetail(
+                            label = "Expediente",
+                            detail = viewModel.userProfile!!.expediente
+                        )
+                        Spacer(modifier = Modifier.height(26.dp))
+                        ProfileDetail(
+                            label = "Correo",
+                            detail = viewModel.userProfile!!.email
+                        )
+                    }
+                }
+                else -> {
+                    Text(
+                        text = "No se encontró información del usuario",
+                        modifier = Modifier.align(Alignment.Center),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Gray
+                    )
+                }
+            }
         }
     }
 }
@@ -101,28 +114,23 @@ fun ProfileDetail(label: String, detail: String) {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            // Label / categoria
             Text(
                 text = label,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.titleMedium,
                 color = Color.Black,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 8.dp),
+                    .padding(28.dp),
                 textAlign = TextAlign.Start
             )
-
-            // Detalle / informacion
             Text(
                 text = detail,
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = Color.Gray,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 8.dp),
+                    .padding(8.dp),
                 textAlign = TextAlign.End
-
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -130,9 +138,8 @@ fun ProfileDetail(label: String, detail: String) {
     }
 }
 
-
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen(navController = rememberNavController())
+    ProfileScreen(navController = rememberNavController(), viewModel = ProfileViewModel())
 }
