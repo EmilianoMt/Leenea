@@ -1,4 +1,4 @@
-package com.example.proyecto_turnos_c.ui.screens.adminAddEvent
+package com.example.proyecto_turnos_c.ui.screens.adminEvents
 
 import NavBar
 import androidx.compose.foundation.BorderStroke
@@ -7,8 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.ArrowForward
-import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,10 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.proyecto_turnos_c.ui.components.AdminEventCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyEventsScreen(navController: NavController) {
+fun AdminEventsScreen(navController: NavController) {
     val eventList = listOf(
         "Evento Destacado 1",
         "Evento Destacado 2",
@@ -44,7 +45,7 @@ fun MyEventsScreen(navController: NavController) {
                         modifier = Modifier.padding(start = 8.dp) // ← Aquí separas del borde
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Menu,
+                            imageVector = Icons.Outlined.ArrowBackIosNew,
                             contentDescription = "Menú",
                             tint = Color.Black,
                             modifier = Modifier.size(30.dp)
@@ -66,7 +67,6 @@ fun MyEventsScreen(navController: NavController) {
             contentPadding = PaddingValues(horizontal = 35.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Título fuera del TopAppBar
             item {
                 Text(
                     text = "Eventos disponibles",
@@ -77,41 +77,11 @@ fun MyEventsScreen(navController: NavController) {
                 )
             }
 
-            // Tarjetas normales
+
             items(eventList) { title ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    shape = MaterialTheme.shapes.medium, // Sin sombra
-                    border = BorderStroke(1.dp, Color(0xFF0D47A1)) // Borde azul oscuro
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 25.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold // (opcional) para negritas también
-                        )
-                        Icon(
-                            imageVector = Icons.Outlined.ArrowForward,
-                            contentDescription = "Ver más",
-                            tint = Color.Gray
-                        )
-                    }
-                }
+                AdminEventCard(title = title)
             }
 
-            // Tarjeta punteada con ícono "+"
             item {
                 Box(
                     modifier = Modifier
@@ -143,5 +113,5 @@ fun MyEventsScreen(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun MyEventsScreenPreview() {
-    MyEventsScreen(navController = rememberNavController())
+    AdminEventsScreen(navController = rememberNavController())
 }

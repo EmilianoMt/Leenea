@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.proyecto_turnos_c.ui.components.SplashScreen
+import com.example.proyecto_turnos_c.ui.screens.adminEvents.AdminEventsScreen
 import com.example.proyecto_turnos_c.ui.screens.eventsDescription.EventsDescScreen
 import com.example.proyecto_turnos_c.ui.screens.eventsEnded.EventsEndedScreen
 import com.example.proyecto_turnos_c.ui.screens.myEvents.MyEventsScreen
@@ -18,6 +20,7 @@ import com.example.proyecto_turnos_c.ui.screens.register.Register
 fun NavigationGraph(startDestination: String = "login") {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = startDestination) {
+//        composable("splash") { SplashScreen(navController) }
         composable("login") { Login(navController) }
         composable("register") { Register(navController) }
         composable("home") { HomeScreen(navController) }
@@ -26,5 +29,6 @@ fun NavigationGraph(startDestination: String = "login") {
         composable("notifications") { NotificatonsScreen(navController) }
         composable("EventsEnded"){ EventsEndedScreen(navController) }
         composable("EventsDesc"){ EventsDescScreen(navController) }
+        composable("adminEvents"){ AdminEventsScreen(navController) }
     }
 }
