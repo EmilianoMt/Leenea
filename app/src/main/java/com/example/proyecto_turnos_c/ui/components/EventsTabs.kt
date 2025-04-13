@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 fun EventTabs(
     content: @Composable () -> Unit,
     finishedContent: @Composable () -> Unit,
-    containerColor: Color = Color.White
+    containerColor: Color = Color.Transparent
 ) {
     val selectedTabIndex = remember { mutableStateOf(0) }
 

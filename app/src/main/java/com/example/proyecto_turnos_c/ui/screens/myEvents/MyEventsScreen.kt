@@ -4,6 +4,7 @@ import NavBar
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -45,7 +46,9 @@ val eventList = listOf(
     EventData("Evento Destacado 1", "No te lo pierdas", true),
     EventData("Evento Destacado 2", "No te lo pierdas", false),
     EventData("Evento Destacado 3", "No te lo pierdas", true),
-    EventData("Evento Destacado 4", "No te lo pierdas", false)
+    EventData("Evento Destacado 4", "No te lo pierdas", false),
+    EventData("Evento Destacado 5", "No te lo pierdas", false)
+
 )
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -57,7 +60,6 @@ fun MyEventsScreen(navController: NavController) {
             TopAppBar(
                 modifier = Modifier.height(106.dp),
                 title = {
-                    // Centra el título
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -83,18 +85,22 @@ fun MyEventsScreen(navController: NavController) {
             )
         },
         bottomBar = { NavBar(navController = navController) }
-    ) {
-        ScreenContent()
+    ) { innerPadding ->
+        ScreenContent(modifier = Modifier.padding(innerPadding))
     }
 }
 
-@Composable
-fun ScreenContent() {
-    EventTabs(
-        content = { EventosVigentes() },
-        finishedContent = { EventosFinalizados() }
-    )
-}
+
+    @Composable
+    fun ScreenContent(modifier: Modifier = Modifier) {
+        Column(modifier = modifier.fillMaxSize()) {
+            EventTabs(
+                content = { EventosVigentes() },
+                finishedContent = { EventosFinalizados() }
+            )
+        }
+    }
+
 
 @Composable
 fun EventosVigentes() {
@@ -125,7 +131,6 @@ fun EventosVigentes() {
 
 @Composable
 fun EventosFinalizados() {
-    // Filtra los eventos finalizados (isAvailable == false)
     val finishedEvents = eventList.filter { !it.isAvailable }
     LazyColumn(
         modifier = Modifier

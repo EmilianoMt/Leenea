@@ -46,7 +46,6 @@ fun HomeScreen(navController: NavController) {
             TopAppBar(
                 modifier = Modifier.height(106.dp),
                 title = {
-                    // Centramos el título sin afectar el layout del contenido.
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
