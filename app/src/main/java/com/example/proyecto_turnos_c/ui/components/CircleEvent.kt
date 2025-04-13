@@ -29,10 +29,11 @@ fun CircularImageCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .clip(CardDefaults.elevatedShape)
     ) {
         ElevatedCard(
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

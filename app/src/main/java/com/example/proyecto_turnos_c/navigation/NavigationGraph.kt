@@ -1,11 +1,10 @@
-// NavigationGraph.kt
 package com.example.proyecto_turnos_c.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.proyecto_turnos_c.ui.components.SplashScreen
+import com.example.proyecto_turnos_c.ui.screens.adminAddEvent.AdminAddEventsScreen
 import com.example.proyecto_turnos_c.ui.screens.adminEvents.AdminEventsScreen
 import com.example.proyecto_turnos_c.ui.screens.eventsDescription.EventsDescScreen
 import com.example.proyecto_turnos_c.ui.screens.eventsEnded.EventsEndedScreen
@@ -30,5 +29,6 @@ fun NavigationGraph(startDestination: String = "login") {
         composable("EventsEnded"){ EventsEndedScreen(navController) }
         composable("EventsDesc"){ EventsDescScreen(navController) }
         composable("adminEvents"){ AdminEventsScreen(navController) }
+        composable("createEvent"){ AdminAddEventsScreen(navController) }
     }
 }
