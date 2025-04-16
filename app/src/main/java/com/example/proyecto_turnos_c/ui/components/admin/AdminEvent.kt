@@ -1,4 +1,4 @@
-package com.example.proyecto_turnos_c.ui.components
+package com.example.proyecto_turnos_c.ui.components.admin
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement

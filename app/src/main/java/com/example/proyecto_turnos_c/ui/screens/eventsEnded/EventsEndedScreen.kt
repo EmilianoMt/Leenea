@@ -31,7 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.proyecto_turnos_c.ui.components.EventAnnouncementCard
+import com.example.proyecto_turnos_c.R
+import com.example.proyecto_turnos_c.ui.components.user.EventAnnouncementCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +43,6 @@ fun EventsEndedScreen(navController: NavController) {
             TopAppBar(
                 modifier = Modifier.height(100.dp),
                 title = {
-                    // TopAppBar centrado
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -80,7 +80,6 @@ fun EventsEndedScreen(navController: NavController) {
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Encabezado sobre la card: título centrado con icono leftArrow
             item {
                 Row(
                     modifier = Modifier
@@ -111,7 +110,7 @@ fun EventsEndedScreen(navController: NavController) {
 
             item {
                 EventAnnouncementCard(
-                    imageRes = com.example.proyecto_turnos_c.R.drawable.event1,
+                    imageRes = R.drawable.event1,
                     fechaHora = "17/Marzo/2025, 13:00-18:00",
                     ubicacion = "Centro de desarrollo",
                     descripcion = "Inscripción al Hackathon Troyano 2025-I"

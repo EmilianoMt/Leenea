@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.proyecto_turnos_c.ui.components.EventCard
+import com.example.proyecto_turnos_c.ui.components.user.EventCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

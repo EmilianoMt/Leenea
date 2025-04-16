@@ -1,4 +1,4 @@
-package com.example.proyecto_turnos_c.ui.components
+package com.example.proyecto_turnos_c.ui.components.navigationC
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,11 +24,10 @@ fun EventTabs(
     val selectedTabIndex = remember { mutableStateOf(0) }
 
     Column {
-        // Fila de pestañas sin indicador activo (usamos una lambda vacía en "indicator")
         SecondaryTabRow(
             selectedTabIndex = selectedTabIndex.value,
             containerColor = containerColor,
-            indicator = {} // Sin indicador activo
+            indicator = {}
         ) {
             Tab(
                 selected = selectedTabIndex.value == 0,
@@ -51,7 +50,6 @@ fun EventTabs(
                 )
             }
         }
-        // Renderiza el contenido según la pestaña seleccionada.
         Box(modifier = Modifier.fillMaxSize()) {
             when (selectedTabIndex.value) {
                 0 -> content()

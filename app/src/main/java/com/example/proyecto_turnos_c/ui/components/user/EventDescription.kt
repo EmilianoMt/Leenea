@@ -1,4 +1,4 @@
-package com.example.proyecto_turnos_c.ui.components
+package com.example.proyecto_turnos_c.ui.components.user
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -20,6 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.proyecto_turnos_c.R
 
 @Composable
 fun EventDetailCard(
@@ -115,7 +116,7 @@ fun EventDetailCard(
 @Composable
 fun EventDetailCardPreview() {
     EventDetailCard(
-        buildingImageRes = com.example.proyecto_turnos_c.R.drawable.event1, // Reemplaza con tu recurso de imagen
+        buildingImageRes = R.drawable.event1, // Reemplaza con tu recurso de imagen
         fechaHora = "14/Marzo/2025\n13:00-18:00",
         ubicacion = "Sala de Usos Múltiples",
         descripcion = "Alta de materias para alumnos de 2° semestre en adelante",

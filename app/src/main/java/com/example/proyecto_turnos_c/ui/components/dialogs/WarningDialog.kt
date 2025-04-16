@@ -1,4 +1,4 @@
-package com.example.proyecto_turnos_c.ui.components
+package com.example.proyecto_turnos_c.ui.components.dialogs
 
 import androidx.compose.ui.window.Dialog
 import androidx.compose.foundation.layout.*
