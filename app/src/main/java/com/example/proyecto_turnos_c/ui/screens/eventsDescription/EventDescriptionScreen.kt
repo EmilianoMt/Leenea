@@ -31,7 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.proyecto_turnos_c.ui.components.EventDetailCard
+import com.example.proyecto_turnos_c.R
+import com.example.proyecto_turnos_c.ui.components.user.EventDetailCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,7 +115,7 @@ fun EventsDescScreen(navController: NavController) {
                     contentAlignment = Alignment.Center
                 ) {
                     EventDetailCard(
-                        buildingImageRes = com.example.proyecto_turnos_c.R.drawable.event1,
+                        buildingImageRes = R.drawable.event1,
                         fechaHora = "14/Marzo/2025\n13:00-18:00",
                         ubicacion = "Sala de Usos Múltiples",
                         descripcion = "Alta de materias para alumnos de 2° semestre en adelante",

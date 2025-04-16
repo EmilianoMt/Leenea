@@ -1,14 +1,12 @@
 package com.example.proyecto_turnos_c.ui.screens.adminEvents
 
 import NavBar
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
-import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.proyecto_turnos_c.ui.components.AdminEventCard
+import com.example.proyecto_turnos_c.ui.components.admin.AdminEventCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

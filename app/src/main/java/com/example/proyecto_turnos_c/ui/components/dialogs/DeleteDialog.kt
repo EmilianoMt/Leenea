@@ -1,4 +1,4 @@
-package com.example.proyecto_turnos_c.ui.components
+package com.example.proyecto_turnos_c.ui.components.dialogs
 
 import androidx.compose.ui.window.Dialog
 import androidx.compose.foundation.layout.*
@@ -86,6 +86,9 @@ fun DeleteDialog(
 @Preview(showBackground = true)
 @Composable
 fun DeleteDialogPreview() {
+    /** Acción al cancelar */
+    /** Acción al aceptar */
+    /** Accion que cierra el diálogo */
     DeleteDialog(
         onDismissRequest = { /** Accion que cierra el diálogo */ },
         onAccept = { /** Acción al aceptar */ },

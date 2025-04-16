@@ -1,12 +1,12 @@
 package com.example.proyecto_turnos_c.ui.screens.myEvents
 
 import NavBar
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,17 +31,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.R
-import com.example.proyecto_turnos_c.ui.components.CircularImageCard
-import com.example.proyecto_turnos_c.ui.components.EventTabs
+import com.example.proyecto_turnos_c.ui.components.user.CircularImageCard
+import com.example.proyecto_turnos_c.ui.components.navigationC.EventTabs
 
-// Modelo para los eventos
 data class EventData(
     val title: String,
     val subtitle: String,
     val isAvailable: Boolean
 )
 
-// Lista de ejemplo de eventos.
 val eventList = listOf(
     EventData("Evento Destacado 1", "No te lo pierdas", true),
     EventData("Evento Destacado 2", "No te lo pierdas", false),
@@ -51,7 +49,6 @@ val eventList = listOf(
 
 )
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyEventsScreen(navController: NavController) {
@@ -91,27 +88,27 @@ fun MyEventsScreen(navController: NavController) {
 }
 
 
-    @Composable
-    fun ScreenContent(modifier: Modifier = Modifier) {
-        Column(modifier = modifier.fillMaxSize()) {
-            EventTabs(
-                content = { EventosVigentes() },
-                finishedContent = { EventosFinalizados() }
-            )
-        }
+@Composable
+fun ScreenContent(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxSize()) {
+        EventTabs(
+            content = { EventosVigentes() },
+            finishedContent = { EventosFinalizados() }
+        )
     }
+}
 
 
 @Composable
 fun EventosVigentes() {
-    // Filtra los eventos vigentes (isAvailable == true)
     val upcomingEvents = eventList.filter { it.isAvailable }
     LazyColumn(
         modifier = Modifier
+            .fillMaxWidth()
             .fillMaxSize()
             .padding(20.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(vertical = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(upcomingEvents) { event ->
             Box(
@@ -136,8 +133,8 @@ fun EventosFinalizados() {
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues( vertical = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(finishedEvents) { event ->
             Box(

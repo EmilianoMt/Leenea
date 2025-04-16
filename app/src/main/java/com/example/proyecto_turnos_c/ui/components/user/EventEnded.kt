@@ -1,4 +1,4 @@
-package com.example.proyecto_turnos_c.ui.components
+package com.example.proyecto_turnos_c.ui.components.user
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.proyecto_turnos_c.R
 
 @Composable
 fun EventAnnouncementCard(
@@ -116,7 +117,7 @@ fun InfoRow(label: String, info: String) {
 @Composable
 fun EventAnnouncementCardPreview() {
     EventAnnouncementCard(
-        imageRes = com.example.proyecto_turnos_c.R.drawable.event1,
+        imageRes = R.drawable.event1,
         fechaHora = "17/Marzo/2025, 13:00-18:00",
         ubicacion = "Centro de desarrollo",
         descripcion = "Inscripción al Hackathon Troyano 2025-I",

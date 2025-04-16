@@ -28,7 +28,7 @@ fun Notification(
     title: String,
     message: String,
     timestamp: String,
-    isSuccess: Boolean, // Determina el icono
+    isSuccess: Boolean, 
     modifier: Modifier = Modifier
 ) {
     // Selección de ícono

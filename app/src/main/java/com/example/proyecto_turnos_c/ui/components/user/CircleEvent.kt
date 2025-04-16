@@ -1,4 +1,4 @@
-package com.example.proyecto_turnos_c.ui.components
+package com.example.proyecto_turnos_c.ui.components.user
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
