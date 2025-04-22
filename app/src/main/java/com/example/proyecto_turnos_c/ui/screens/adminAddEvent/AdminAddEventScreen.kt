@@ -1,77 +1,106 @@
 package com.example.proyecto_turnos_c.ui.screens.adminAddEvent
 
-import NavBar
 import android.net.Uri
-import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import coil.compose.SubcomposeAsyncImage
-import coil.request.ImageRequest
-import java.text.SimpleDateFormat
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.util.*
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.proyecto_turnos_c.ui.components.admin.formEvent.DateSelector
+import com.example.proyecto_turnos_c.ui.components.admin.formEvent.DescriptionField
+import com.example.proyecto_turnos_c.ui.components.admin.formEvent.EventDatePicker
+import com.example.proyecto_turnos_c.ui.components.admin.formEvent.EventTimePicker
+import com.example.proyecto_turnos_c.ui.components.admin.formEvent.ImageSelector
+import com.example.proyecto_turnos_c.ui.components.admin.formEvent.LocationField
+import com.example.proyecto_turnos_c.ui.components.admin.formEvent.SaveEventButton
+import com.example.proyecto_turnos_c.ui.components.admin.formEvent.TimeSelector
+import com.example.proyecto_turnos_c.ui.components.admin.formEvent.TitleField
+import com.example.proyecto_turnos_c.ui.components.dialogs.EventComfirm
+import kotlinx.coroutines.delay
 
 
 @Composable
-fun AdminAddEventsScreen(navController: NavController) {
-    // Estados para todos los campos del formulario
-    var title by remember { mutableStateOf("") }
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
-    var startTime by remember { mutableStateOf<LocalTime?>(null) }
-    var endTime by remember { mutableStateOf<LocalTime?>(null) }
-    var location by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+fun AdminAddEventsScreen(
+    navController: NavController,
+    viewModel: AdminAddEventsViewModel = viewModel()) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    // Obtener los estados del ViewModel
+    val uiState by viewModel.uiState.collectAsState()
+    val creationState by viewModel.eventCreationState.collectAsState()
 
     // Estados para los pickers
     var showDatePicker by remember { mutableStateOf(false) }
     var showStartTimePicker by remember { mutableStateOf(false) }
     var showEndTimePicker by remember { mutableStateOf(false) }
 
+    // Estado para controlar la visualización del diálogo de confirmación
+    var showConfirmDialog by remember { mutableStateOf(false) }
 
+    // Selector de imágenes
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        imageUri = uri
+        viewModel.updateImageUri(uri)
+    }
+
+    // Observar el estado de creación del evento
+    LaunchedEffect(creationState) {
+        when (creationState) {
+            is EventCreationState.Success -> {
+                Log.d("AdminAddEventsScreen", "Evento creado con éxito - Mostrando diálogo")
+                showConfirmDialog = true
+            }
+            else -> {}
+        }
+    }
+
+    // Efecto para cerrar el diálogo automáticamente después de 3 segundos
+    LaunchedEffect(showConfirmDialog) {
+        if (showConfirmDialog) {
+            Log.d("AdminAddEventsScreen", "Diálogo mostrado - Esperando 3 segundos")
+            delay(3000)
+            Log.d("AdminAddEventsScreen", "Cerrando diálogo y reseteando formulario")
+            showConfirmDialog = false
+            viewModel.resetForm()
+        }
+    }
+
+    // Diálogo de confirmación
+    if (showConfirmDialog) {
+        EventComfirm(
+            onDismissRequest = {
+                showConfirmDialog = false
+                viewModel.resetForm()
+            },
+            message = "Evento creado de forma exitosa"
+        )
     }
 
     Scaffold(
         topBar = {
-            EventAppBar(title = "Creación de evento")
-        },
-//        bottomBar = {  NavBar(navController = navController)}
-
+            EventAppBar(
+                title = "Creación de evento",
+                onBackClick = { navController.popBackStack() }
+            )
+        }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -101,40 +130,49 @@ fun AdminAddEventsScreen(navController: NavController) {
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // Componentes del formulario
-                        TitleField(title = title, onTitleChange = { title = it })
+                        // Componentes del formulario actualizados para usar el ViewModel
+                        TitleField(
+                            title = uiState.title,
+                            onTitleChange = { viewModel.updateTitle(it) }
+                        )
 
                         ImageSelector(
-                            imageUri = imageUri,
+                            imageUri = uiState.imageUri,
                             onPickImage = { imagePicker.launch("image/*") }
                         )
 
                         DateSelector(
-                            selectedDate = selectedDate,
+                            selectedDate = uiState.date,
                             onShowDatePicker = { showDatePicker = true }
                         )
 
                         TimeSelector(
-                            startTime = startTime,
-                            endTime = endTime,
+                            startTime = uiState.startTime,
+                            endTime = uiState.endTime,
                             onStartTimeClick = { showStartTimePicker = true },
                             onEndTimeClick = { showEndTimePicker = true }
                         )
 
                         LocationField(
-                            location = location,
-                            onLocationChange = { location = it }
+                            location = uiState.location,
+                            onLocationChange = { viewModel.updateLocation(it) }
                         )
 
                         DescriptionField(
-                            description = description,
-                            onDescriptionChange = { description = it }
+                            description = uiState.description,
+                            onDescriptionChange = { viewModel.updateDescription(it) }
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
+                SaveEventButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.createEvent(context)
+                        }
+                    },
+                    isLoading = creationState is EventCreationState.Loading
+                )
 
-                SaveEventButton(onClick = { /* Guardar evento */ })
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -143,8 +181,8 @@ fun AdminAddEventsScreen(navController: NavController) {
     // DatePicker
     if (showDatePicker) {
         EventDatePicker(
-            initialSelectedDateMillis = selectedDate ?: System.currentTimeMillis(),
-            onDateSelected = { selectedDate = it },
+            initialSelectedDateMillis = uiState.date ?: System.currentTimeMillis(),
+            onDateSelected = { viewModel.updateDate(it) },
             onDismiss = { showDatePicker = false }
         )
     }
@@ -153,8 +191,8 @@ fun AdminAddEventsScreen(navController: NavController) {
     if (showStartTimePicker) {
         EventTimePicker(
             title = "Seleccionar hora de inicio",
-            initialTime = startTime,
-            onTimeSelected = { startTime = it },
+            initialTime = uiState.startTime,
+            onTimeSelected = { viewModel.updateStartTime(it) },
             onDismiss = { showStartTimePicker = false }
         )
     }
@@ -163,8 +201,8 @@ fun AdminAddEventsScreen(navController: NavController) {
     if (showEndTimePicker) {
         EventTimePicker(
             title = "Seleccionar hora de finalización",
-            initialTime = endTime,
-            onTimeSelected = { endTime = it },
+            initialTime = uiState.endTime,
+            onTimeSelected = { viewModel.updateEndTime(it) },
             onDismiss = { showEndTimePicker = false }
         )
     }
@@ -172,14 +210,14 @@ fun AdminAddEventsScreen(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventAppBar(title: String) {
+fun EventAppBar(title: String, onBackClick: () -> Unit) {
     TopAppBar(
         title = { },
         navigationIcon = {
-            IconButton(onClick = { /* Abrir menú lateral */ }) {
+            IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBackIosNew,
-                    contentDescription = "Menú"
+                    contentDescription = "Volver"
                 )
             }
         },
@@ -203,423 +241,9 @@ fun EventAppBar(title: String) {
     }
 }
 
-
-@Composable
-fun TitleField(title: String, onTitleChange: (String) -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = "Inserte un título",
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
-        )
-
-        OutlinedTextField(
-            value = title,
-            onValueChange = onTitleChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.LightGray,
-                focusedBorderColor = Color(0xFFFFAB40)
-            )
-        )
-    }
-}
-
-@Composable
-fun ImageSelector(imageUri: Uri?, onPickImage: () -> Unit) {
-    val context = LocalContext.current
-
-    Column {
-        Text(
-            text = "Imagen",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
-        )
-
-        Text(
-            text = "Seleccione una imagen para el evento",
-            color = Color.Gray,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(140.dp)
-                .border(
-                    width = 1.dp,
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .clip(RoundedCornerShape(8.dp))
-                .clickable(onClick = onPickImage),
-            contentAlignment = Alignment.Center
-        ) {
-            if (imageUri == null) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Añadir imagen",
-                    modifier = Modifier.size(48.dp),
-                    tint = Color.Gray
-                )
-            } else {
-                // Usar SubcomposeAsyncImage para manejar los diferentes estados
-                SubcomposeAsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .data(imageUri)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "Imagen del evento",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                    loading = {
-                        // Estado de carga
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = Color(0xFFFFAB40)
-                            )
-                        }
-                    },
-                    error = {
-                        // Estado de error
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Error,
-                                    contentDescription = "Error al cargar la imagen",
-                                    tint = Color.Red
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Error al cargar la imagen",
-                                    color = Color.Red
-                                )
-                            }
-                        }
-                    }
-                )
-
-                // Overlay para indicar que la imagen está seleccionada
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .size(24.dp)
-                        .background(Color.White, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = "Imagen seleccionada",
-                        tint = Color(0xFF4CAF50)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun DateSelector(selectedDate: Long?, onShowDatePicker: () -> Unit) {
-    Column {
-        Text(
-            text = "Fecha",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
-        )
-
-        Text(
-            text = "Seleccione la fecha del evento",
-            color = Color.Gray,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
-                .clickable(onClick = onShowDatePicker),
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Text(
-                    text = selectedDate?.let { convertMillisToDate(it) } ?: "Seleccionar fecha",
-                    color = if (selectedDate == null) Color.Gray else Color.Black,
-                    fontSize = 14.sp
-                )
-
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Seleccionar fecha",
-                    tint = Color.Gray
-                )
-            }
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun TimeSelector(
-    startTime: LocalTime?,
-    endTime: LocalTime?,
-    onStartTimeClick: () -> Unit,
-    onEndTimeClick: () -> Unit
-) {
-    Column {
-        Text(
-            text = "Hora",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
-        )
-
-        Text(
-            text = "Ingrese el horario del evento",
-            color = Color.Gray,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // Hora de inicio
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp)
-                    .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
-                    .clickable(onClick = onStartTimeClick),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                ) {
-                    Text(
-                        text = startTime?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "Hora de inicio",
-                        color = if (startTime == null) Color.Gray else Color.Black,
-                        fontSize = 14.sp
-                    )
-                }
-            }
-
-            // Hora de finalización
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp)
-                    .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
-                    .clickable(onClick = onEndTimeClick),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                ) {
-                    Text(
-                        text = endTime?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "Hora de finalización",
-                        color = if (endTime == null) Color.Gray else Color.Black,
-                        fontSize = 14.sp
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun LocationField(location: String, onLocationChange: (String) -> Unit) {
-    Column {
-        Text(
-            text = "Ubicación",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
-        )
-
-        Text(
-            text = "Ingrese el lugar del evento",
-            color = Color.Gray,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-
-        OutlinedTextField(
-            value = location,
-            onValueChange = onLocationChange,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.LightGray,
-                focusedBorderColor = Color(0xFFFFAB40)
-            )
-        )
-    }
-}
-
-@Composable
-fun DescriptionField(description: String, onDescriptionChange: (String) -> Unit) {
-    Column {
-        Text(
-            text = "Descripción",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
-        )
-
-        Text(
-            text = "Inserte la descripción del evento",
-            color = Color.Gray,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-
-        OutlinedTextField(
-            value = description,
-            onValueChange = onDescriptionChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp),
-            maxLines = 5,
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.LightGray,
-                focusedBorderColor = Color(0xFFFFAB40)
-            )
-        )
-    }
-}
-
-@Composable
-fun SaveEventButton(onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp, bottom = 8.dp)
-            .height(56.dp),
-        shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFAB40))
-    ) {
-        Text(
-            text = "Guardar evento",
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EventDatePicker(
-    initialSelectedDateMillis: Long,
-    onDateSelected: (Long) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = initialSelectedDateMillis
-    )
-
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            Button(onClick = {
-                datePickerState.selectedDateMillis?.let { onDateSelected(it) }
-                onDismiss()
-            }) {
-                Text("Aceptar")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text("Cancelar")
-            }
-        }
-    ) {
-        DatePicker(state = datePickerState)
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EventTimePicker(
-    title: String,
-    initialTime: LocalTime?,
-    onTimeSelected: (LocalTime) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val timePickerState = rememberTimePickerState(
-        initialHour = initialTime?.hour ?: 12,
-        initialMinute = initialTime?.minute ?: 0
-    )
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                TimePicker(state = timePickerState)
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onTimeSelected(LocalTime.of(timePickerState.hour, timePickerState.minute))
-                    onDismiss()
-                }
-            ) {
-                Text("Aceptar")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text("Cancelar")
-            }
-        }
-    )
-}
-
-fun convertMillisToDate(millis: Long): String {
-    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    return formatter.format(Date(millis))
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun AdminAddEventsScreenPreview() {
-    AdminAddEventsScreen(navController = rememberNavController())
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showBackground = true)
+//@Composable
+//fun AdminAddEventsScreenPreview() {
+//    AdminAddEventsScreen(navController = rememberNavController())
+//}
