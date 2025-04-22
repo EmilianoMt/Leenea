@@ -31,10 +31,11 @@ class RegisterViewModel : ViewModel() {
                     val user = auth.currentUser
                     if (user != null) {
                         val userData = hashMapOf(
+                            "uid" to user.uid,
                             "fullName" to fullName,
                             "email" to email,
                             "expediente" to expediente,
-                            "uid" to user.uid
+                            "role" to "user"
                         )
                         firestore.collection("users").document(user.uid)
                             .set(userData)

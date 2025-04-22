@@ -11,7 +11,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 data class LoginState(
     val loading: Boolean = false,
     val error: String? = null,
-    val success: Boolean = false
+    val success: Boolean = false,
+    val userRole: String = ""
 )
 
 class LoginViewModel : ViewModel(){
@@ -19,11 +20,11 @@ class LoginViewModel : ViewModel(){
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    var loginState by mutableStateOf(RegisterState())
+    var loginState by mutableStateOf(LoginState())
         private set
 
     fun loginUser(email: String, password: String){
-        loginState = loginState.copy(loading = true, error = null, success = false)
+        loginState = loginState.copy(loading = true, error = null, success = false, userRole = "")
 
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener{ task ->
@@ -32,8 +33,9 @@ class LoginViewModel : ViewModel(){
                     if(user != null){
                         firestore.collection("users").document(user.uid)
                             .get()
-                            .addOnSuccessListener {
-                                loginState = loginState.copy(loading = false, success = true)
+                            .addOnSuccessListener { document ->
+                                val role = document.getString("role")?: "user"
+                                loginState = loginState.copy(loading = false, success = true, userRole = role)
                             }
                             .addOnFailureListener{ e ->
                                 loginState = loginState.copy(loading = false, error = e.message)

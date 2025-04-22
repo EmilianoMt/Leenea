@@ -16,7 +16,7 @@ import com.example.proyecto_turnos_c.ui.screens.profile.ProfileScreen
 import com.example.proyecto_turnos_c.ui.screens.register.Register
 
 @Composable
-fun NavigationGraph(startDestination: String = "createEvent") {
+fun NavigationGraph(startDestination: String = "login") {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = startDestination) {
 //        composable("splash") { SplashScreen(navController) }

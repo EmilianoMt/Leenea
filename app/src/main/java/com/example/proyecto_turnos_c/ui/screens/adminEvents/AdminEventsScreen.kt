@@ -1,6 +1,7 @@
 package com.example.proyecto_turnos_c.ui.screens.adminEvents
 
 import NavBar
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -54,9 +55,8 @@ fun AdminEventsScreen(navController: NavController) {
                     containerColor = Color.Transparent
                 )
             )
-        }
-        ,
-        bottomBar = { NavBar(navController = navController) }
+        },
+//        bottomBar = { NavBar(navController = navController) }
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -85,6 +85,7 @@ fun AdminEventsScreen(navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
+                        .clickable{navController.navigate("createEvent")}
                         .drawBehind {
                             val strokeWidth = 3f
                             val dash = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)

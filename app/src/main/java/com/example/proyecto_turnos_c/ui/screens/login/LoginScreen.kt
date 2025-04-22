@@ -46,7 +46,11 @@ fun Login(navController: NavController, loginViewModel: LoginViewModel = viewMod
 
         LaunchedEffect(key1 = loginState.success) {
             if (loginState.success) {
-                navController.navigate("home")
+                when(loginState.userRole){
+                    "admin" -> navController.navigate("adminEvents")
+                    "user" -> navController.navigate("home")
+                    else -> navController.navigate("home")
+                }
             }
         }
 
