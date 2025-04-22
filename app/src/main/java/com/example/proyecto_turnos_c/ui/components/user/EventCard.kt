@@ -10,23 +10,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.example.proyecto_turnos_c.R
 
 @Composable
 fun EventCard(
     title: String,
     subtitle: String,
+    image: String,
     iconButtonAction: () -> Unit
 ) {
+    val painter = if (image.startsWith("http")) {
+        rememberAsyncImagePainter(
+            ImageRequest.Builder(LocalContext.current)
+                .data(image)
+                .crossfade(true)
+                .build()
+        )
+    } else {
+        androidx.compose.ui.res.painterResource(id = R.drawable.event1)
+    }
+
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         modifier = Modifier.size(width = 370.dp, height = 210.dp)
     ) {
         Column {
             Image(
-                painter = painterResource(id = R.drawable.event1),
+                painter = painter,
                 contentDescription = "Event Image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -68,5 +82,3 @@ fun EventCard(
         }
     }
 }
-
-
