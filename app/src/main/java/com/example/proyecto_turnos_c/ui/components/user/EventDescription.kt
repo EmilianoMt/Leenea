@@ -17,23 +17,47 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.example.proyecto_turnos_c.R
 
 @Composable
 fun EventDetailCard(
-    buildingImageRes: Int,
+    imageUrl: String? = null,
+    buildingImageRes: Int? = null,
     fechaHora: String,
     ubicacion: String,
     descripcion: String,
     turnoActual: String,
     tuTurno: String,
-    modifier: Modifier = Modifier
 ) {
+
+    val painter = when {
+        // Si hay URL se carga la imagen
+        imageUrl != null && imageUrl.isNotEmpty() -> {
+            rememberAsyncImagePainter(
+                ImageRequest.Builder(LocalContext.current)
+                    .data(imageUrl)
+                    .crossfade(true)
+                    .build()
+            )
+        }
+        // Si hay imagen en el bucket se carga
+        buildingImageRes != null -> {
+            painterResource(id = buildingImageRes)
+        }
+        // Si no hay ninguno, usar una imagen por defecto
+        else -> {
+            painterResource(id = R.drawable.event1)
+        }
+    }
+
     Card(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .height(700.dp)
             .padding(16.dp),
@@ -43,7 +67,7 @@ fun EventDetailCard(
         Column(modifier = Modifier.padding(16.dp)) {
             // Imagen superior
             Image(
-                painter = painterResource(id = buildingImageRes),
+                painter = painter,
                 contentDescription = "Imagen del evento",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -53,35 +77,48 @@ fun EventDetailCard(
             )
             Spacer(modifier = Modifier.height(26.dp))
             // Sección de información en dos columnas
-            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
-                InfoRow(label = "Fecha y Hora:", info = fechaHora)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+            ) {
+                InfoRow(
+                    label = "Fecha y Hora:",
+                    info = fechaHora
+                )
                 Divider(
                     color = Color.LightGray,
                     thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
-                InfoRow(label = "Ubicación:", info = ubicacion)
+                InfoRow(
+                    label = "Ubicación:",
+                    info = ubicacion
+                )
                 Divider(
                     color = Color.LightGray,
                     thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
-                InfoRow(label = "Descripción:", info = descripcion)
+                InfoRow(
+                    label = "Descripción:",
+                    info = descripcion
+                )
             }
             Spacer(modifier = Modifier.height(44.dp))
-            // Sección inferior: dos columnas (QR a la izquierda, turnos a la derecha)
+            // Sección inferior con los datos
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Columna izquierda: icono QR
+                //Seccion del QR
                 Icon(
                     imageVector = Icons.Outlined.QrCode,
                     contentDescription = "Código QR",
                     modifier = Modifier.size(200.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
-                // Columna derecha: turnos
+                // Sección de los turnos
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "TURNO ACTUAL:",
@@ -111,12 +148,11 @@ fun EventDetailCard(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun EventDetailCardPreview() {
     EventDetailCard(
-        buildingImageRes = R.drawable.event1, // Reemplaza con tu recurso de imagen
+        buildingImageRes = R.drawable.event1,
         fechaHora = "14/Marzo/2025\n13:00-18:00",
         ubicacion = "Sala de Usos Múltiples",
         descripcion = "Alta de materias para alumnos de 2° semestre en adelante",

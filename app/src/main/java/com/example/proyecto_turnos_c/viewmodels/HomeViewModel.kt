@@ -59,7 +59,7 @@ class HomeViewModel : ViewModel() {
 
                 _events.value = eventsList
             } catch (e: Exception) {
-                _error.value = e.message ?: "Unknown error occurred"
+                _error.value = e.message ?: "Error desconocido"
             } finally {
                 _isLoading.value = false
             }

@@ -1,9 +1,11 @@
 package com.example.proyecto_turnos_c.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.proyecto_turnos_c.ui.screens.adminAddEvent.AdminAddEventsScreen
 import com.example.proyecto_turnos_c.ui.screens.adminEvents.AdminEventsScreen
 import com.example.proyecto_turnos_c.ui.screens.eventsDescription.EventsDescScreen
@@ -27,7 +29,16 @@ fun NavigationGraph(startDestination: String = "login") {
         composable("myEvents") { MyEventsScreen(navController) }
         composable("notifications") { NotificatonsScreen(navController) }
         composable("EventsEnded"){ EventsEndedScreen(navController) }
-        composable("EventsDesc"){ EventsDescScreen(navController) }
+        composable(
+            route = "EventsDesc/{eventId}",
+            arguments = listOf(navArgument("eventId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+            EventsDescScreen(
+                navController = navController,
+                eventId = eventId
+            )
+        }
         composable("adminEvents"){ AdminEventsScreen(navController) }
         composable("createEvent"){ AdminAddEventsScreen(navController) }
     }
