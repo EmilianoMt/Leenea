@@ -1,6 +1,7 @@
 package com.example.proyecto_turnos_c.ui.components.admin
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,17 +25,19 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AdminEventCard(
-    title: String
+    title: String,
+    action : () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp),
+            .height(50.dp)
+            .clickable { action() },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = MaterialTheme.shapes.medium, // Sin sombra
-        border = BorderStroke(1.dp, Color(0xFF0D47A1)) // Borde azul oscuro
+        shape = MaterialTheme.shapes.medium,
+        border = BorderStroke(1.dp, Color(0xFF0D47A1))
     ) {
         Row(
             modifier = Modifier
@@ -47,7 +50,7 @@ fun AdminEventCard(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.Black,
-                fontWeight = FontWeight.Bold // (opcional) para negritas también
+                fontWeight = FontWeight.Bold
             )
             Icon(
                 imageVector = Icons.Outlined.ArrowForward,
@@ -58,8 +61,9 @@ fun AdminEventCard(
     }
 }
 
-@Composable
-@Preview
-fun adminEventCardPreview() {
-    AdminEventCard("ASAS")
-}
+//@Composable
+//@Preview
+//fun adminEventCardPreview() {
+//    AdminEventCard("ASAS", action = {navController.navigate("login")})
+//
+//}

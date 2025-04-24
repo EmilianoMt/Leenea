@@ -115,8 +115,7 @@ fun HomeScreen(
                                 title = event.title,
                                 subtitle = event.description,
                                 image = event.imageUrl,
-                                iconButtonAction = {
-                                    // Navigate to event details with event ID
+                                action = {
                                     navController.navigate("EventsDesc/${event.id}")
                                 }
                             )

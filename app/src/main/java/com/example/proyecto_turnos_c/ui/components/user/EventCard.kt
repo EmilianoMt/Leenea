@@ -1,6 +1,7 @@
 package com.example.proyecto_turnos_c.ui.components.user
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
@@ -21,7 +22,7 @@ fun EventCard(
     title: String,
     subtitle: String,
     image: String,
-    iconButtonAction: () -> Unit
+    action: () -> Unit
 ) {
     val painter = if (image.startsWith("http")) {
         rememberAsyncImagePainter(
@@ -35,8 +36,10 @@ fun EventCard(
     }
 
     ElevatedCard(
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        modifier = Modifier.size(width = 370.dp, height = 210.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        modifier = Modifier
+            .size(width = 370.dp, height = 210.dp)
+            .clickable { action() }
     ) {
         Column {
             Image(
@@ -67,17 +70,15 @@ fun EventCard(
                         color = Color.Gray
                     )
                 }
-                IconButton(
-                    onClick = iconButtonAction,
-                    modifier = Modifier.align(Alignment.BottomEnd)
-                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                         contentDescription = "Siguiente",
                         tint = Color.Black,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
+                            .size(34.dp)
+                            .padding(bottom = 8.dp)
+                            .align(Alignment.BottomEnd)
                     )
-                }
             }
         }
     }
