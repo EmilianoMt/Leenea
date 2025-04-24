@@ -10,6 +10,8 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -20,18 +22,22 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.ui.components.admin.AdminEventCard
+import com.example.proyecto_turnos_c.ui.components.user.EventCard
+import com.example.proyecto_turnos_c.viewmodels.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminEventsScreen(navController: NavController) {
-    val eventList = listOf(
-        "Evento Destacado 1",
-        "Evento Destacado 2",
-        "Evento Destacado 3"
-    )
+fun AdminEventsScreen(
+    navController: NavController,
+    viewModel: HomeViewModel = viewModel()
+) {
+    val events by viewModel.events.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
 
     Scaffold(
         topBar = {
@@ -41,7 +47,7 @@ fun AdminEventsScreen(navController: NavController) {
                 navigationIcon = {
                     IconButton(
                         onClick = { /* Acción para el menú */ },
-                        modifier = Modifier.padding(start = 8.dp) // ← Aquí separas del borde
+                        modifier = Modifier.padding(start = 8.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowBackIosNew,
@@ -56,58 +62,92 @@ fun AdminEventsScreen(navController: NavController) {
                 )
             )
         },
-//        bottomBar = { NavBar(navController = navController) }
     ) { innerPadding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(horizontal = 35.dp, vertical = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(innerPadding)
+                .padding(horizontal = 35.dp, vertical = 24.dp)
         ) {
-            item {
-                Text(
-                    text = "Eventos disponibles",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
+            Text(
+                text = "Eventos disponibles",
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
 
+            when {
+                isLoading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
 
-            items(eventList) { title ->
-                AdminEventCard(title = title)
-            }
+                error != null -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "Error: $error",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
 
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .clickable{navController.navigate("createEvent")}
-                        .drawBehind {
-                            val strokeWidth = 3f
-                            val dash = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-                            drawRoundRect(
-                                color = Color.Gray,
-                                style = Stroke(width = strokeWidth, pathEffect = dash),
-                                cornerRadius = CornerRadius(16f, 16f)
+                events.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "No hay eventos disponibles",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+
+                else -> {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        items(events) { event ->
+                            AdminEventCard(
+                                title = event.title,
+                                action = {navController.navigate("login")}
                             )
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Add,
-                        contentDescription = "Agregar nuevo evento",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(30.dp)
-                    )
+                        }
+
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp)
+                                    .clickable { navController.navigate("createEvent") }
+                                    .drawBehind {
+                                        val strokeWidth = 3f
+                                        val dash = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+                                        drawRoundRect(
+                                            color = Color.Gray,
+                                            style = Stroke(width = strokeWidth, pathEffect = dash),
+                                            cornerRadius = CornerRadius(16f, 16f)
+                                        )
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Add,
+                                    contentDescription = "Agregar nuevo evento",
+                                    tint = Color.Gray,
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+
 
 @Preview(showBackground = true)
 @Composable
