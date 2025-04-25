@@ -95,12 +95,14 @@ fun AdminEventsScreen(
                 }
 
                 events.isEmpty() -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier
+                        .size(400.dp), contentAlignment = Alignment.Center) {
                         Text(
                             text = "No hay eventos disponibles",
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
+                    CreateEventButton(navController)
                 }
 
                 else -> {
@@ -116,29 +118,7 @@ fun AdminEventsScreen(
                         }
 
                         item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp)
-                                    .clickable { navController.navigate("createEvent") }
-                                    .drawBehind {
-                                        val strokeWidth = 3f
-                                        val dash = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-                                        drawRoundRect(
-                                            color = Color.Gray,
-                                            style = Stroke(width = strokeWidth, pathEffect = dash),
-                                            cornerRadius = CornerRadius(16f, 16f)
-                                        )
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Add,
-                                    contentDescription = "Agregar nuevo evento",
-                                    tint = Color.Gray,
-                                    modifier = Modifier.size(30.dp)
-                                )
-                            }
+                            CreateEventButton(navController)
                         }
                     }
                 }
@@ -147,7 +127,33 @@ fun AdminEventsScreen(
     }
 }
 
+@Composable
+fun CreateEventButton(navController: NavController){
 
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clickable { navController.navigate("createEvent") }
+            .drawBehind {
+                val strokeWidth = 3f
+                val dash = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+                drawRoundRect(
+                    color = Color.Gray,
+                    style = Stroke(width = strokeWidth, pathEffect = dash),
+                    cornerRadius = CornerRadius(16f, 16f)
+                )
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Add,
+            contentDescription = "Agregar nuevo evento",
+            tint = Color.Gray,
+            modifier = Modifier.size(30.dp)
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

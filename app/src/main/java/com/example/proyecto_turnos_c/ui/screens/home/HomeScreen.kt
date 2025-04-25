@@ -107,18 +107,28 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(events) { event ->
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            EventCard(
-                                title = event.title,
-                                subtitle = event.description,
-                                image = event.imageUrl,
-                                action = {
-                                    navController.navigate("EventsDesc/${event.id}")
-                                }
-                            )
+                        if (event.isAvailable){
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                EventCard(
+                                    title = event.title,
+                                    subtitle = event.description,
+                                    image = event.imageUrl,
+                                    action = {
+                                        navController.navigate("EventsDesc/${event.id}")
+                                    }
+                                )
+                            }
+                        }else {
+                            // cambiar para estilizar con un icono y texto
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = "No hay eventos disponibles",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
                         }
                     }
                 }

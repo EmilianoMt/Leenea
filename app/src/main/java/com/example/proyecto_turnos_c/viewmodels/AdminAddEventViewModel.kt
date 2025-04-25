@@ -141,7 +141,8 @@ class AdminAddEventsViewModel : ViewModel() {
             "endTime" to currentState.endTime.toString(),
             "location" to currentState.location,
             "description" to currentState.description,
-            "createdAt" to Timestamp.now()
+            "createdAt" to Timestamp.now(),
+            "isAvailable" to true
         )
 
         // Guardar en Firestore

@@ -17,7 +17,8 @@ data class Event(
     val imageUrl: String = "",
     val startTime: String = "",
     val endTime: String = "",
-    val location: String = ""
+    val location: String = "",
+    val isAvailable: Boolean
 )
 
 class HomeViewModel : ViewModel() {
@@ -53,7 +54,8 @@ class HomeViewModel : ViewModel() {
                         imageUrl = doc.getString("imageUrl") ?: "",
                         startTime = doc.getString("startTime") ?: "",
                         endTime = doc.getString("endTime") ?: "",
-                        location = doc.getString("location") ?: ""
+                        location = doc.getString("location") ?: "",
+                        isAvailable = doc.getBoolean("isAvailable") ?: false
                     )
                 }
 
