@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,35 +24,33 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.R
 import com.example.proyecto_turnos_c.ui.components.user.CircularImageCard
 import com.example.proyecto_turnos_c.ui.components.navigationC.EventTabs
-
-data class EventData(
-    val title: String,
-    val subtitle: String,
-    val isAvailable: Boolean
-)
-
-val eventList = listOf(
-    EventData("Evento Destacado 1", "No te lo pierdas", true),
-    EventData("Evento Destacado 2", "No te lo pierdas", false),
-    EventData("Evento Destacado 3", "No te lo pierdas", true),
-    EventData("Evento Destacado 4", "No te lo pierdas", false),
-    EventData("Evento Destacado 5", "No te lo pierdas", false)
-
-)
+import com.example.proyecto_turnos_c.ui.components.user.EventCard
+import com.example.proyecto_turnos_c.viewmodels.HomeViewModel
+import com.example.proyecto_turnos_c.viewmodels.Event
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyEventsScreen(navController: NavController) {
+fun MyEventsScreen(
+    navController: NavController,
+    viewModel: HomeViewModel = viewModel()
+) {
+    val events by viewModel.events.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -83,43 +82,69 @@ fun MyEventsScreen(navController: NavController) {
         },
         bottomBar = { NavBar(navController = navController) }
     ) { innerPadding ->
-        ScreenContent(modifier = Modifier.padding(innerPadding))
-    }
-}
-
-
-@Composable
-fun ScreenContent(modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxSize()) {
-        EventTabs(
-            content = { EventosVigentes() },
-            finishedContent = { EventosFinalizados() }
+        ScreenContent(
+            modifier = Modifier.padding(innerPadding),
+            navController = navController,
+            viewModel = viewModel,
+            isLoading = isLoading,
+            error = error
         )
     }
 }
 
+@Composable
+fun ScreenContent(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewModel: HomeViewModel,
+    isLoading: Boolean,
+    error: String?
+) {
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else if (error != null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(text = "Error: $error", style = MaterialTheme.typography.bodyLarge)
+        }
+    } else {
+        Column(modifier = modifier.fillMaxSize()) {
+            EventTabs(
+                content = { EventosVigentes(navController = navController, viewModel = viewModel) },
+                finishedContent = { EventosFinalizados(navController = navController, viewModel = viewModel) }
+            )
+        }
+    }
+}
 
 @Composable
-fun EventosVigentes() {
-    val upcomingEvents = eventList.filter { it.isAvailable }
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxSize()
-            .padding(20.dp),
-        contentPadding = PaddingValues(vertical = 14.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(upcomingEvents) { event ->
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+fun EventosVigentes(navController: NavController, viewModel: HomeViewModel) {
+    val events by viewModel.events.collectAsState()
+    val availableEvents = events.filter { it.isAvailable }
+
+    if (availableEvents.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                text = "No hay eventos disponibles",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(availableEvents) { event ->
                 CircularImageCard(
-                    imageRes = R.drawable.event1,
                     title = event.title,
-                    description = event.subtitle,
-                    isAvailable = event.isAvailable
+                    description = event.description,
+                    imageUrl = event.imageUrl,
+                    isAvailable = event.isAvailable,
+                    action = {
+                        navController.navigate("EventsDesc/${event.id}")
+                    }
                 )
             }
         }
@@ -127,26 +152,40 @@ fun EventosVigentes() {
 }
 
 @Composable
-fun EventosFinalizados() {
-    val finishedEvents = eventList.filter { !it.isAvailable }
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        contentPadding = PaddingValues( vertical = 14.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(finishedEvents) { event ->
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularImageCard(
-                    imageRes = R.drawable.event1,
-                    title = event.title,
-                    description = event.subtitle,
-                    isAvailable = event.isAvailable
-                )
+fun EventosFinalizados(navController: NavController, viewModel: HomeViewModel) {
+    val events by viewModel.events.collectAsState()
+    val finishedEvents = events.filter { !it.isAvailable }
+
+    if (finishedEvents.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                text = "No hay eventos finalizados",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp),
+            contentPadding = PaddingValues(vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(finishedEvents) { event ->
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularImageCard(
+                        imageUrl = event.imageUrl,
+                        title = event.title,
+                        description = event.description,
+                        isAvailable = event.isAvailable,
+                        action = {
+                            navController.navigate("EventsEnded/${event.id}")
+                        }
+                    )
+                }
             }
         }
     }

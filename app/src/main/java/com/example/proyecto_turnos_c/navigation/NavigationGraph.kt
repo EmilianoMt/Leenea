@@ -28,7 +28,16 @@ fun NavigationGraph(startDestination: String = "login") {
         composable("profile") { ProfileScreen(navController) }
         composable("myEvents") { MyEventsScreen(navController) }
         composable("notifications") { NotificatonsScreen(navController) }
-        composable("EventsEnded"){ EventsEndedScreen(navController) }
+        composable(
+            route = "EventsEnded/{eventId}",
+            arguments = listOf(navArgument("eventId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+            EventsEndedScreen(
+                navController = navController,
+                eventId = eventId
+            )
+        }
         composable(
             route = "EventsDesc/{eventId}",
             arguments = listOf(navArgument("eventId") { type = NavType.StringType })

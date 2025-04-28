@@ -1,11 +1,13 @@
 package com.example.proyecto_turnos_c.ui.screens.profile
 
 import NavBar
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,7 +29,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.viewmodels.ProfileViewModel
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = viewModel()) {
@@ -92,6 +93,8 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = vi
                             label = "Correo",
                             detail = viewModel.userProfile!!.email
                         )
+                        Spacer(modifier = Modifier.height(108.dp))
+                        BtnLogout(viewModel, navController)
                     }
                 }
                 else -> {
@@ -136,6 +139,32 @@ fun ProfileDetail(label: String, detail: String) {
         Spacer(modifier = Modifier.height(8.dp))
         Divider(color = Color.LightGray, thickness = 1.dp)
     }
+}
+
+@Composable
+fun BtnLogout(viewModel: ProfileViewModel, navController: NavController) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(26.dp))
+        Button(
+            onClick = {
+                viewModel.logout()
+                navController.navigate("login")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp, bottom = 8.dp)
+                .height(56.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFAB40)),
+        ) {
+            Text("Cerrar Sesión")
+        }
+
+    }
+
 }
 
 @Preview
