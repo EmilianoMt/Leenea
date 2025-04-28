@@ -17,20 +17,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.example.proyecto_turnos_c.R
 
 @Composable
-fun EventAnnouncementCard(
-    imageRes: Int,
+fun EventEnded(
+    imageRes: String,
     fechaHora: String,
     ubicacion: String,
     descripcion: String,
     modifier: Modifier = Modifier
 ) {
+    // Determine the appropriate painter based on the image source
+    val painter = when {
+        imageRes != null && imageRes.startsWith("http") -> {
+            rememberAsyncImagePainter(
+                ImageRequest.Builder(LocalContext.current)
+                    .data(imageRes)
+                    .crossfade(true)
+                    .build()
+            )
+        }
+        else -> {
+            painterResource(id = R.drawable.event1) // Default fallback image
+        }
+    }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -42,7 +60,7 @@ fun EventAnnouncementCard(
         Column(modifier = Modifier.padding(16.dp)) {
             // Imagen
             Image(
-                painter = painterResource(id = imageRes),
+                painter = painter,
                 contentDescription = "Imagen del evento",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -113,13 +131,13 @@ fun InfoRow(label: String, info: String) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun EventAnnouncementCardPreview() {
-    EventAnnouncementCard(
-        imageRes = R.drawable.event1,
-        fechaHora = "17/Marzo/2025, 13:00-18:00",
-        ubicacion = "Centro de desarrollo",
-        descripcion = "Inscripción al Hackathon Troyano 2025-I",
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun EventAnnouncementCardPreview() {
+//    EventEnded(
+////        imageRes = R.drawable.event1,
+//        fechaHora = "17/Marzo/2025, 13:00-18:00",
+//        ubicacion = "Centro de desarrollo",
+//        descripcion = "Inscripción al Hackathon Troyano 2025-I",
+//    )
+//}
