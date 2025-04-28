@@ -20,6 +20,8 @@ class ProfileViewModel : ViewModel() {
     var isLoading by mutableStateOf(true)
         private set
 
+
+
     init {
         loadUserProfile()
     }
@@ -42,5 +44,11 @@ class ProfileViewModel : ViewModel() {
         } else {
             isLoading = false
         }
+    }
+
+    fun logout() {
+        FirebaseAuth.getInstance().signOut()
+        userProfile = null
+        isLoading = false
     }
 }
