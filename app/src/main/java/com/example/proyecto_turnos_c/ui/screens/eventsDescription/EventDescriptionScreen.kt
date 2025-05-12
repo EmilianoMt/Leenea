@@ -27,6 +27,7 @@ import com.example.proyecto_turnos_c.viewmodels.EventDescriptionViewModelFactory
 fun EventsDescScreen(
     navController: NavController,
     eventId: String,
+    userId: String,
     viewModel: EventDescriptionViewModel = viewModel(
         factory = EventDescriptionViewModelFactory(eventId)
     )
@@ -145,12 +146,15 @@ fun EventsDescScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             EventDetailCard(
+                                eventId = eventId,
+
                                 imageUrl = event.imageUrl,
                                 fechaHora = "${event.date}\n${event.startTime} - ${event.endTime}",
                                 ubicacion = event.location,
                                 descripcion = event.description,
                                 turnoActual = event.currentTurn,
-                                tuTurno = event.yourTurn
+                                tuTurno = event.yourTurn,
+                                userId = userId
                             )
                         }
                     }

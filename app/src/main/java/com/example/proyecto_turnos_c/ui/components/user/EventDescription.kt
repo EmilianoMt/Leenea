@@ -11,9 +11,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,17 +25,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.proyecto_turnos_c.R
 import com.example.proyecto_turnos_c.ui.components.dialogs.WarningDialog
-
-
+import com.example.proyecto_turnos_c.viewmodels.EventDetailCardViewModel
+import com.example.proyecto_turnos_c.viewmodels.EventDetailCardViewModelFactory
 
 @Composable
 fun EventDetailCard(
+    eventId: String,
+    userId: String,
     imageUrl: String? = null,
     buildingImageRes: Int? = null,
     fechaHora: String,
@@ -41,10 +46,22 @@ fun EventDetailCard(
     descripcion: String,
     turnoActual: String,
     tuTurno: String,
+    viewModel: EventDetailCardViewModel = viewModel(
+        factory = EventDetailCardViewModelFactory(eventId, userId)
+    )
 ) {
+    // Obtener los estados del ViewModel
+    val isInQueue by viewModel.isInQueue.collectAsState()
+    val userTurn by viewModel.userTurn.collectAsState()
+    val currentTurn by viewModel.currentTurn.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+
     var showDialog by remember { mutableStateOf(false) }
 
-    var isInQueue by remember { mutableStateOf(false) }
+    // Mostrar el turno del ViewModel si está disponible, de lo contrario usar el proporcionado
+    val displayCurrentTurn = if (currentTurn.isNotEmpty()) currentTurn else turnoActual
+    val displayUserTurn = if (userTurn.isNotEmpty()) userTurn else tuTurno
 
     val painter = when {
         imageUrl != null && imageUrl.isNotEmpty() -> {
@@ -67,84 +84,110 @@ fun EventDetailCard(
         WarningDialog(
             onDismissRequest = { showDialog = false },
             onAccept = {
-                isInQueue = true
+                viewModel.joinQueue()
                 showDialog = false
             },
             onCancel = { showDialog = false }
         )
     }
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(700.dp)
-            .padding(16.dp),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // Imagen superior
-            Image(
-                painter = painter,
-                contentDescription = "Imagen del evento",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop,
-            )
+    // Mostrar mensaje de error si existe
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            // Mostrar el error por un tiempo y luego reiniciar
+            viewModel.resetError()
+        }
+    }
 
-            Spacer(modifier = Modifier.height(26.dp))
-
-            // Sección de información en dos columnas
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-            ) {
-                InfoRow(
-                    label = "Fecha y Hora:",
-                    info = fechaHora
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(700.dp)
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                // Imagen superior
+                Image(
+                    painter = painter,
+                    contentDescription = "Imagen del evento",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop,
                 )
 
-                Divider(
-                    color = Color.LightGray,
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
+                Spacer(modifier = Modifier.height(26.dp))
 
-                InfoRow(
-                    label = "Ubicación:",
-                    info = ubicacion
-                )
+                // Sección de información en dos columnas
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                ) {
+                    InfoRow(
+                        label = "Fecha y Hora:",
+                        info = fechaHora
+                    )
 
-                Divider(
-                    color = Color.LightGray,
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
+                    Divider(
+                        color = Color.LightGray,
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
 
-                InfoRow(
-                    label = "Descripción:",
-                    info = descripcion
-                )
-            }
+                    InfoRow(
+                        label = "Ubicación:",
+                        info = ubicacion
+                    )
 
-            Spacer(modifier = Modifier.height(44.dp))
+                    Divider(
+                        color = Color.LightGray,
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                if (isInQueue) {
-                    QrGenerator(turnoActual, tuTurno)
-                } else {
-                    IngresarBtn { showDialog = true }
+                    InfoRow(
+                        label = "Descripción:",
+                        info = descripcion
+                    )
                 }
-            }
 
-            Spacer(modifier = Modifier.height(26.dp))
+                Spacer(modifier = Modifier.height(44.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator()
+                    } else if (isInQueue) {
+                        QrGenerator(displayCurrentTurn, displayUserTurn)
+                    } else {
+                        IngresarBtn { showDialog = true }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(26.dp))
+            }
+        }
+
+        // Mostrar mensaje de error en un Snackbar si existe
+        errorMessage?.let {
+            Snackbar(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                action = {
+                    Button(onClick = { viewModel.resetError() }) {
+                        Text("OK")
+                    }
+                }
+            ) {
+                Text(text = it)
+            }
         }
     }
 }
@@ -224,6 +267,8 @@ fun QrGenerator(turnoActual: String, tuTurno: String) {
 @Composable
 fun EventDetailCardPreview() {
     EventDetailCard(
+        eventId = "preview_event_id",
+        userId = "preview_user_id",
         buildingImageRes = R.drawable.event1,
         fechaHora = "14/Marzo/2025\n13:00-18:00",
         ubicacion = "Sala de Usos Múltiples",
