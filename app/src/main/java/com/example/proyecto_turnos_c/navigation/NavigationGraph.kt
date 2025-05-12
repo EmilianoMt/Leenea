@@ -43,9 +43,11 @@ fun NavigationGraph(startDestination: String = "login") {
             arguments = listOf(navArgument("eventId") { type = NavType.StringType })
         ) { backStackEntry ->
             val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
             EventsDescScreen(
                 navController = navController,
-                eventId = eventId
+                eventId = eventId,
+                userId = userId
             )
         }
         composable("adminEvents"){ AdminEventsScreen(navController) }
