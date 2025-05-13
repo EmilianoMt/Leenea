@@ -5,14 +5,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material.icons.outlined.SubdirectoryArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
@@ -34,6 +32,7 @@ import com.example.proyecto_turnos_c.R
 import com.example.proyecto_turnos_c.ui.components.dialogs.WarningDialog
 import com.example.proyecto_turnos_c.viewmodels.EventDetailCardViewModel
 import com.example.proyecto_turnos_c.viewmodels.EventDetailCardViewModelFactory
+import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 
 @Composable
 fun EventDetailCard(
@@ -166,7 +165,7 @@ fun EventDetailCard(
                     if (isLoading) {
                         CircularProgressIndicator()
                     } else if (isInQueue) {
-                        QrGenerator(displayCurrentTurn, displayUserTurn)
+                        QrGenerator(displayCurrentTurn, displayUserTurn, "Ejemplo")
                     } else {
                         IngresarBtn { showDialog = true }
                     }
@@ -175,24 +174,9 @@ fun EventDetailCard(
                 Spacer(modifier = Modifier.height(26.dp))
             }
         }
-
-        // Mostrar mensaje de error en un Snackbar si existe
-        errorMessage?.let {
-            Snackbar(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                action = {
-                    Button(onClick = { viewModel.resetError() }) {
-                        Text("OK")
-                    }
-                }
-            ) {
-                Text(text = it)
-            }
-        }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IngresarBtn(onClick: () -> Unit) {
     Box(
@@ -218,17 +202,18 @@ fun IngresarBtn(onClick: () -> Unit) {
     }
 }
 
+
 @Composable
-fun QrGenerator(turnoActual: String, tuTurno: String) {
+fun QrGenerator(turnoActual: String, tuTurno: String, data: String ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        // Sección del QR
-        Icon(
-            imageVector = Icons.Outlined.QrCode,
-            contentDescription = "Código QR",
+        val qrPainter = rememberQrCodePainter(data)
+        Image(
+            painter = qrPainter,
+            contentDescription = "Código QR del turno",
             modifier = Modifier.size(200.dp)
         )
 
