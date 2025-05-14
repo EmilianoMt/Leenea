@@ -147,7 +147,7 @@ fun EventsDescScreen(
                         ) {
                             EventDetailCard(
                                 eventId = eventId,
-
+                                eventTitle = event.title,
                                 imageUrl = event.imageUrl,
                                 fechaHora = "${event.date}\n${event.startTime} - ${event.endTime}",
                                 ubicacion = event.location,

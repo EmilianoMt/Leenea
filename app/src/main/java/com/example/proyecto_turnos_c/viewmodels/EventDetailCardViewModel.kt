@@ -1,6 +1,9 @@
 package com.example.proyecto_turnos_c.viewmodels
 
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -12,13 +15,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 
+
+
 data class QueueRegistration(
     val userId: String = "",
     val eventId: String = "",
     val turnNumber: String = "",
     val timestamp: Date = Date(),
-    val status: String = "waiting" // waiting, completed, canceled
+    val status: String = "waiting"
 )
+
 
 class EventDetailCardViewModel(private val eventId: String) : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
@@ -39,9 +45,13 @@ class EventDetailCardViewModel(private val eventId: String) : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
+    var userProfile by mutableStateOf<UserProfile?>(null)
+        private set
+
     init {
         checkIfUserInQueue()
         getCurrentTurn()
+        infoTurn()
     }
 
     private fun checkIfUserInQueue() {
@@ -89,7 +99,6 @@ class EventDetailCardViewModel(private val eventId: String) : ViewModel() {
                 val userId = auth.currentUser?.uid
                     ?: throw Exception("Usuario no autenticado")
 
-                // 1) Checar **antes** en qué turno está (fuera de la tx)
                 val existing = db.collection("events")
                     .document(eventId)
                     .collection("registrations")
@@ -98,13 +107,11 @@ class EventDetailCardViewModel(private val eventId: String) : ViewModel() {
                     .await()
 
                 if (!existing.isEmpty) {
-                    // Ya está registrado, recuperamos su turno y salimos
                     _userTurn.value = existing.documents.first().getString("turnNumber") ?: ""
                     _isInQueue.value = true
                     return@launch
                 }
 
-                // 2) Si no existe, vamos a la transacción sólo para el counter + crear registro
                 val newTurn = db.runTransaction { transaction ->
                     val eventRef = db.collection("events").document(eventId)
                     val eventSnap = transaction.get(eventRef)
@@ -112,10 +119,8 @@ class EventDetailCardViewModel(private val eventId: String) : ViewModel() {
                     val next = last + 1
                     val formatted = String.format("%03d", next)
 
-                    // Actualizamos counter
                     transaction.update(eventRef, "lastTurnNumber", next)
 
-                    // Preparamos datos de registro
                     val reg = QueueRegistration(
                         userId = userId,
                         eventId = eventId,
@@ -123,7 +128,6 @@ class EventDetailCardViewModel(private val eventId: String) : ViewModel() {
                         timestamp = Date(),
                         status = "waiting"
                     )
-                    // Creamos documento
                     val regRef = db.collection("events")
                         .document(eventId)
                         .collection("registrations")
@@ -144,18 +148,29 @@ class EventDetailCardViewModel(private val eventId: String) : ViewModel() {
         }
     }
 
-
+    private fun infoTurn() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            FirebaseFirestore.getInstance().collection("users")
+                .document(currentUser.uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    userProfile = document.toObject(UserProfile::class.java)
+                }
+        }
+    }
     fun resetError() {
         _errorMessage.value = null
     }
 }
 
-class EventDetailCardViewModelFactory(private val eventId: String, private val userId: String) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(EventDetailCardViewModel::class.java)) {
-            return EventDetailCardViewModel(eventId) as T
+    class EventDetailCardViewModelFactory(private val eventId: String, private val userId: String) :
+        ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(EventDetailCardViewModel::class.java)) {
+                return EventDetailCardViewModel(eventId) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
-}
