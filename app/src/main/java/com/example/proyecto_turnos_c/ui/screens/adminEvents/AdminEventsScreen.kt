@@ -1,10 +1,10 @@
 package com.example.proyecto_turnos_c.ui.screens.adminEvents
 
-import NavBar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
@@ -26,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.ui.components.admin.AdminEventCard
+import com.example.proyecto_turnos_c.ui.components.navigationC.AdminNavBar
 import com.example.proyecto_turnos_c.ui.components.user.EventCard
 import com.example.proyecto_turnos_c.viewmodels.HomeViewModel
 
@@ -61,7 +62,9 @@ fun AdminEventsScreen(
                     containerColor = Color.Transparent
                 )
             )
-        },
+        }, bottomBar = {
+            AdminNavBar(navController = navController)
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -122,6 +125,10 @@ fun AdminEventsScreen(
                         item {
                             CreateEventButton(navController)
                         }
+
+                        item {
+                            BtnLogout(viewModel, navController)
+                        }
                     }
                 }
             }
@@ -131,7 +138,6 @@ fun AdminEventsScreen(
 
 @Composable
 fun CreateEventButton(navController: NavController){
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -157,8 +163,28 @@ fun CreateEventButton(navController: NavController){
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun MyEventsScreenPreview() {
-    AdminEventsScreen(navController = rememberNavController())
+fun BtnLogout(viewModel: HomeViewModel, navController: NavController) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(26.dp))
+        Button(
+            onClick = {
+                viewModel.logout()
+                navController.navigate("login")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp, bottom = 8.dp)
+                .height(56.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFAB40)),
+        ) {
+            Text("Cerrar Sesión")
+        }
+
+    }
 }
+

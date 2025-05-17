@@ -1,11 +1,15 @@
+package com.example.proyecto_turnos_c.ui.components.navigationC
+
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.GroupAdd
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Event
+import androidx.compose.material.icons.outlined.GroupAdd
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,22 +29,22 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun NavBar(navController: NavController, modifier: Modifier = Modifier) {
+fun AdminNavBar(navController: NavController, modifier: Modifier = Modifier) {
     // Obtenemos la entrada actual del backstack para determinar la ruta actual.
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
     // Asociasion de las rutas y etiquetas correspondientes a cada item.
-    val routes = listOf("home", "myEvents", "profile")
-    val labels = listOf("Home", "Mis Eventos", "Perfil")
-    val selectedIcons = listOf(Icons.Filled.Home, Icons.Filled.Event, Icons.Filled.AccountCircle)
-    val unselectedIcons = listOf(Icons.Outlined.Home, Icons.Outlined.Event, Icons.Outlined.AccountCircle)
+    val routes = listOf("adminEvents", "addAdmin")
+    val labels = listOf("Events", "Registro")
+    val selectedIcons = listOf(Icons.Filled.Home, Icons.Filled.GroupAdd)
+    val unselectedIcons = listOf(Icons.Outlined.Home, Icons.Outlined.GroupAdd)
 
     // Determinamos el índice seleccionado en función de la ruta actual:
     val selectedIndex = when (currentRoute) {
-        "home" -> 0
-        "myEvents" -> 1
-        "profile" -> 2
+        "adminEvents" -> 0
+        "addAdmin" -> 1
+//        "profile" -> 2
         else -> 0
     }
 
@@ -79,10 +83,4 @@ fun NavBar(navController: NavController, modifier: Modifier = Modifier) {
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun NavBarPreview() {
-    NavBar(navController = rememberNavController())
 }

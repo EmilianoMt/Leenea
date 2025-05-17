@@ -22,7 +22,7 @@ class RegisterViewModel : ViewModel() {
     var registerState by mutableStateOf(RegisterState())
         private set
 
-    fun registerUser(fullName: String, email: String, password: String, expediente: String) {
+    fun registerUser(fullName: String, email: String, password: String, expediente: String, rol: String) {
         registerState = registerState.copy(loading = true, error = null, success = false)
 
         auth.createUserWithEmailAndPassword(email, password)
@@ -35,7 +35,7 @@ class RegisterViewModel : ViewModel() {
                             "fullName" to fullName,
                             "email" to email,
                             "expediente" to expediente,
-                            "role" to "user"
+                            "role" to rol
                         )
                         firestore.collection("users").document(user.uid)
                             .set(userData)

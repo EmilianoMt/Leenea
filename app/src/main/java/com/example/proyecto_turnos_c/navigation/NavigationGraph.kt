@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.proyecto_turnos_c.ui.screens.addAdmin.AddAmin
 import com.example.proyecto_turnos_c.ui.screens.adminAddEvent.AdminAddEventsScreen
 import com.example.proyecto_turnos_c.ui.screens.adminEvents.AdminEventsScreen
 import com.example.proyecto_turnos_c.ui.screens.adminEventsDescription.AdminEventsDescScreen
@@ -62,5 +63,6 @@ fun NavigationGraph(startDestination: String = "login") {
         }
         composable("adminEvents"){ AdminEventsScreen(navController) }
         composable("createEvent"){ AdminAddEventsScreen(navController) }
+        composable("addAdmin"){ AddAmin(navController) }
     }
 }

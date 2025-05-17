@@ -174,6 +174,7 @@ fun AdminAddEventsScreen(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
+
             }
         }
     }
@@ -240,10 +241,3 @@ fun EventAppBar(title: String, onBackClick: () -> Unit) {
         )
     }
 }
-
-//@RequiresApi(Build.VERSION_CODES.O)
-//@Preview(showBackground = true)
-//@Composable
-//fun AdminAddEventsScreenPreview() {
-//    AdminAddEventsScreen(navController = rememberNavController())
-//}

@@ -2,6 +2,7 @@ package com.example.proyecto_turnos_c.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +35,9 @@ class HomeViewModel : ViewModel() {
 
     init {
         fetchEvents()
+    }
+    fun logout() {
+        FirebaseAuth.getInstance().signOut()
     }
 
     fun fetchEvents() {

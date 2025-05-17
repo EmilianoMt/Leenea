@@ -1,4 +1,5 @@
-package com.example.proyecto_turnos_c.ui.screens.register
+package com.example.proyecto_turnos_c.ui.screens.addAdmin
+
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,9 +9,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +21,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -37,21 +42,53 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.R
+import com.example.proyecto_turnos_c.ui.components.navigationC.AdminNavBar
 import com.example.proyecto_turnos_c.viewmodels.RegisterViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Register(navController: NavController, registerViewModel: RegisterViewModel = viewModel()) {
+fun AddAmin(navController: NavController, registerViewModel: RegisterViewModel = viewModel()) {
     val registerState = registerViewModel.registerState
 
     LaunchedEffect(key1 = registerState.success) {
         if (registerState.success) {
-            navController.navigate("login")
+            navController.navigate("adminEvents")
         }
     }
 
-    Scaffold { innerPadding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.height(84.dp),
+                title = {},
+                navigationIcon = {
+                    IconButton(
+                        onClick = { /* Acción para el menú */ },
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.ArrowBackIosNew,
+                            contentDescription = "Menú",
+                            tint = Color.Black,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+        }, bottomBar = {
+            AdminNavBar(navController = navController)
+        }
+    ){ innerPadding ->
         RegisterForm(navController = navController, registerViewModel = registerViewModel ,modifier = Modifier.padding(innerPadding))
     }
+
+//    Scaffold { innerPadding ->
+//        RegisterForm(navController = navController, registerViewModel = registerViewModel ,modifier = Modifier.padding(innerPadding))
+//
+//    }
 }
 
 @Composable
@@ -73,24 +110,9 @@ fun RegisterForm(navController: NavController, registerViewModel: RegisterViewMo
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Imagen
-        Box(
-            modifier = Modifier
-                .size(150.dp)
-                .clip(CircleShape)
-                .background(Color.LightGray),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = "Placeholder de perfil",
-                modifier = Modifier.size(150.dp)
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
         // Título
         Text(
-            text = "Registrate",
+            text = "Registrar Administrador",
             style = MaterialTheme.typography.titleLarge,
             color = Color(0xFF191C88)
         )
@@ -211,24 +233,15 @@ fun RegisterForm(navController: NavController, registerViewModel: RegisterViewMo
                     emailState.value,
                     passwordState.value,
                     expedienteState.value,
-                    rol = "user"
+                    rol = "admin"
                 )
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA73B))
         ) {
-            Text(text = "Registrarme", color = Color.White)
+            Text(text = "Registrar", color = Color.White)
         }
         Spacer(modifier = Modifier.height(16.dp))
-        // Enlace para ir a la pantalla de login
-        Text(
-            text = "Inicia Sesión",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color(0xFF191C88),
-            modifier = Modifier.clickable {
-                navController.navigate("login")
-            }
-        )
         if (registerViewModel.registerState.error != null){
             Text(
                 text = registerViewModel.registerState.error!!,
@@ -246,8 +259,3 @@ fun RegisterForm(navController: NavController, registerViewModel: RegisterViewMo
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun RegisterPreview() {
-    Register(navController = rememberNavController())
-}
