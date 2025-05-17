@@ -22,11 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.proyecto_turnos_c.viewmodels.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -111,6 +109,31 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = vi
 }
 
 @Composable
+fun BtnLogout(viewModel: ProfileViewModel, navController: NavController) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(26.dp))
+        Button(
+            onClick = {
+                viewModel.logout()
+                navController.navigate("login")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp, bottom = 8.dp)
+                .height(56.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFAB40)),
+        ) {
+            Text("Cerrar Sesión")
+        }
+
+    }
+}
+
+@Composable
 fun ProfileDetail(label: String, detail: String) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -139,36 +162,4 @@ fun ProfileDetail(label: String, detail: String) {
         Spacer(modifier = Modifier.height(8.dp))
         Divider(color = Color.LightGray, thickness = 1.dp)
     }
-}
-
-@Composable
-fun BtnLogout(viewModel: ProfileViewModel, navController: NavController) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Spacer(modifier = Modifier.height(26.dp))
-        Button(
-            onClick = {
-                viewModel.logout()
-                navController.navigate("login")
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp)
-                .height(56.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFAB40)),
-        ) {
-            Text("Cerrar Sesión")
-        }
-
-    }
-
-}
-
-@Preview
-@Composable
-fun ProfileScreenPreview() {
-    ProfileScreen(navController = rememberNavController(), viewModel = ProfileViewModel())
 }
