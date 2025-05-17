@@ -15,6 +15,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 
+data class InfoTurn(
+    val id_user: String = "",
+    val fullName: String = "",
+    val expediente: String = "",
+    val turnoNumero: String = "",
+    val fechaRegistro: String = "",
+    val tituloEvento: String = ""
+)
 
 
 data class QueueRegistration(
@@ -51,7 +59,7 @@ class EventDetailCardViewModel(private val eventId: String) : ViewModel() {
     init {
         checkIfUserInQueue()
         getCurrentTurn()
-        infoTurn()
+        loadUserProfile()
     }
 
     private fun checkIfUserInQueue() {
@@ -148,14 +156,23 @@ class EventDetailCardViewModel(private val eventId: String) : ViewModel() {
         }
     }
 
-    private fun infoTurn() {
+    private fun loadUserProfile() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
             FirebaseFirestore.getInstance().collection("users")
                 .document(currentUser.uid)
                 .get()
                 .addOnSuccessListener { document ->
-                    userProfile = document.toObject(UserProfile::class.java)
+                    if (document != null && document.exists()) {
+                        val profile = document.toObject(UserProfile::class.java)
+                        userProfile = profile?.copy(id = currentUser.uid) ?: UserProfile(id = currentUser.uid)
+                    } else {
+                        userProfile = UserProfile(id = currentUser.uid)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    _errorMessage.value = "Error al cargar el perfil: ${exception.message}"
+                    userProfile = UserProfile(id = currentUser.uid)
                 }
         }
     }
@@ -164,7 +181,7 @@ class EventDetailCardViewModel(private val eventId: String) : ViewModel() {
     }
 }
 
-    class EventDetailCardViewModelFactory(private val eventId: String, private val userId: String) :
+    class EventDetailCardViewModelFactory(private val eventId: String) :
         ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

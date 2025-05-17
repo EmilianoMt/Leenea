@@ -1,4 +1,4 @@
-package com.example.proyecto_turnos_c.ui.screens.eventsDescription
+package com.example.proyecto_turnos_c.ui.screens.adminEventsDescription
 
 import NavBar
 import androidx.compose.foundation.layout.*
@@ -18,13 +18,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.proyecto_turnos_c.ui.components.admin.AdminEventDetailCard
 import com.example.proyecto_turnos_c.ui.components.user.EventDetailCard
 import com.example.proyecto_turnos_c.viewmodels.EventDescriptionViewModel
 import com.example.proyecto_turnos_c.viewmodels.EventDescriptionViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventsDescScreen(
+fun AdminEventsDescScreen(
     navController: NavController,
     eventId: String,
     viewModel: EventDescriptionViewModel = viewModel(
@@ -67,9 +68,6 @@ fun EventsDescScreen(
                 )
             )
         },
-        bottomBar = {
-            NavBar(navController = navController)
-        }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -138,21 +136,18 @@ fun EventsDescScreen(
                             )
                         }
                     }
-
                     item {
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.Center
                         ) {
-                            EventDetailCard(
+                            AdminEventDetailCard(
                                 eventId = eventId,
-                                eventTitle = event.title,
                                 imageUrl = event.imageUrl,
                                 fechaHora = "${event.date}\n${event.startTime} - ${event.endTime}",
                                 ubicacion = event.location,
                                 descripcion = event.description,
                                 turnoActual = event.currentTurn,
-                                tuTurno = event.yourTurn,
                             )
                         }
                     }
@@ -161,3 +156,4 @@ fun EventsDescScreen(
         }
     }
 }
+

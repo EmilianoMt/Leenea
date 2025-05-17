@@ -113,7 +113,9 @@ fun AdminEventsScreen(
                         items(events) { event ->
                             AdminEventCard(
                                 title = event.title,
-                                action = {navController.navigate("login")}
+                                action = {
+                                    navController.navigate("AdminEventsDesc/${event.id}")
+                                }
                             )
                         }
 

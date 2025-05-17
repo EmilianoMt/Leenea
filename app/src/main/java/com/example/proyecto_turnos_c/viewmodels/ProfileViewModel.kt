@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 data class UserProfile(
+    val id: String = "",
     val fullName: String = "",
     val expediente: String = "",
     val email: String = ""
@@ -19,8 +20,6 @@ class ProfileViewModel : ViewModel() {
 
     var isLoading by mutableStateOf(true)
         private set
-
-
 
     init {
         loadUserProfile()

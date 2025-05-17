@@ -32,20 +32,13 @@ import com.example.proyecto_turnos_c.R
 import com.example.proyecto_turnos_c.ui.components.dialogs.WarningDialog
 import com.example.proyecto_turnos_c.viewmodels.EventDetailCardViewModel
 import com.example.proyecto_turnos_c.viewmodels.EventDetailCardViewModelFactory
+import com.example.proyecto_turnos_c.viewmodels.InfoTurn
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
-data class InfoTurn(
-    val fullName: String = "",
-    val expediente: String = "",
-    val turnoNumero: String = "",
-    val fechaRegistro: String = "",
-    val tituloEvento: String = ""
-)
 
 @Composable
 fun EventDetailCard(
     eventId: String,
     eventTitle: String,
-    userId: String,
     imageUrl: String? = null,
     buildingImageRes: Int? = null,
     fechaHora: String,
@@ -54,7 +47,7 @@ fun EventDetailCard(
     turnoActual: String,
     tuTurno: String,
     viewModel: EventDetailCardViewModel = viewModel(
-        factory = EventDetailCardViewModelFactory(eventId, userId)
+        factory = EventDetailCardViewModelFactory(eventId)
     )
 ) {
     // Obtener los estados del ViewModel
@@ -177,6 +170,7 @@ fun EventDetailCard(
                             .format(java.util.Date())
 
                         val userData = InfoTurn(
+                            id_user = viewModel.userProfile?.id ?: "",
                             fullName = viewModel.userProfile?.fullName ?: "",
                             expediente = viewModel.userProfile?.expediente ?: "",
                             turnoNumero = displayUserTurn,
@@ -222,73 +216,3 @@ fun IngresarBtn(onClick: () -> Unit) {
 }
 
 
-@Composable
-fun QrGenerator(turnoActual: String, tuTurno: String, data: InfoTurn) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        // Create a formatted string with all the user data for the QR
-        val qrContent = buildString {
-            append("Nombre: ${data.fullName}\n")
-            append("Expediente: ${data.expediente}\n")
-            append("Turno: ${data.turnoNumero}\n")
-            append("Fecha: ${data.fechaRegistro}\n")
-            append("Evento: ${data.tituloEvento}")
-        }
-
-        val qrPainter = rememberQrCodePainter(qrContent)
-
-        Image(
-            painter = qrPainter,
-            contentDescription = "Código QR del turno",
-            modifier = Modifier.size(200.dp)
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // Sección de los turnos
-        Column(modifier = Modifier) {
-            Text(
-                text = "TURNO ACTUAL:",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Black
-            )
-            Text(
-                text = turnoActual,
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.Gray,
-            )
-
-            Spacer(modifier = Modifier.height(18.dp))
-
-            Text(
-                text = "TU TURNO:",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Black
-            )
-            Text(
-                text = tuTurno,
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.Gray
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun EventDetailCardPreview() {
-    EventDetailCard(
-        eventId = "preview_event_id",
-        eventTitle = "Ejemplo",
-        userId = "preview_user_id",
-        buildingImageRes = R.drawable.event1,
-        fechaHora = "14/Marzo/2025\n13:00-18:00",
-        ubicacion = "Sala de Usos Múltiples",
-        descripcion = "Alta de materias para alumnos de 2° semestre en adelante",
-        turnoActual = "022",
-        tuTurno = "045"
-    )
-}

@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.proyecto_turnos_c.ui.screens.adminAddEvent.AdminAddEventsScreen
 import com.example.proyecto_turnos_c.ui.screens.adminEvents.AdminEventsScreen
+import com.example.proyecto_turnos_c.ui.screens.adminEventsDescription.AdminEventsDescScreen
 import com.example.proyecto_turnos_c.ui.screens.eventsDescription.EventsDescScreen
 import com.example.proyecto_turnos_c.ui.screens.eventsEnded.EventsEndedScreen
 import com.example.proyecto_turnos_c.ui.screens.myEvents.MyEventsScreen
@@ -47,7 +48,16 @@ fun NavigationGraph(startDestination: String = "login") {
             EventsDescScreen(
                 navController = navController,
                 eventId = eventId,
-                userId = userId
+            )
+        }
+        composable(
+            route = "AdminEventsDesc/{eventId}",
+            arguments = listOf(navArgument("eventId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+            AdminEventsDescScreen(
+                navController = navController,
+                eventId = eventId,
             )
         }
         composable("adminEvents"){ AdminEventsScreen(navController) }
