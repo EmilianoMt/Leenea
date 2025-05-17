@@ -16,6 +16,17 @@ import kotlinx.coroutines.tasks.await
 import java.time.LocalTime
 import java.util.UUID
 
+data class EventFormState(
+    val id: String = "",
+    val title: String = "",
+    val imageUri: Uri? = null,
+    val date: Long? = null,
+    val startTime: LocalTime? = null,
+    val endTime: LocalTime? = null,
+    val location: String = "",
+    val description: String = ""
+)
+
 class AdminAddEventsViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(EventFormState())
@@ -202,17 +213,7 @@ class AdminAddEventsViewModel : ViewModel() {
 //    }
 }
 
-// Campos del formulario
-data class EventFormState(
-    val id: String = "",  // Nuevo campo ID
-    val title: String = "",
-    val imageUri: Uri? = null,
-    val date: Long? = null,
-    val startTime: LocalTime? = null,
-    val endTime: LocalTime? = null,
-    val location: String = "",
-    val description: String = ""
-)
+
 
 // Estados posibles del evento
 sealed class EventCreationState {
