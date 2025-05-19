@@ -1,4 +1,4 @@
-package com.example.proyecto_turnos_c.ui.screens.myEvents
+package com.example.proyecto_turnos_c.ui.screens.userEvents
 
 import NavBar
 import androidx.compose.foundation.layout.Arrangement
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,25 +28,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.proyecto_turnos_c.R
 import com.example.proyecto_turnos_c.ui.components.user.CircularImageCard
 import com.example.proyecto_turnos_c.ui.components.navigationC.EventTabs
-import com.example.proyecto_turnos_c.ui.components.user.EventCard
-import com.example.proyecto_turnos_c.viewmodels.HomeViewModel
-import com.example.proyecto_turnos_c.viewmodels.Event
+import com.example.proyecto_turnos_c.viewmodels.UserEventsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyEventsScreen(
     navController: NavController,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: UserEventsViewModel = viewModel()
 ) {
-    val events by viewModel.events.collectAsState()
+    val userEvents by viewModel.userEvents.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
@@ -61,7 +55,7 @@ fun MyEventsScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Mis eventos",
+                            text = "Mis inscripciones",
                             color = Color.Black,
                             style = MaterialTheme.typography.titleLarge
                         )
@@ -96,7 +90,7 @@ fun MyEventsScreen(
 fun ScreenContent(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: HomeViewModel,
+    viewModel: UserEventsViewModel,
     isLoading: Boolean,
     error: String?
 ) {
@@ -111,22 +105,21 @@ fun ScreenContent(
     } else {
         Column(modifier = modifier.fillMaxSize()) {
             EventTabs(
-                content = { EventosVigentes(navController = navController, viewModel = viewModel) },
-                finishedContent = { EventosFinalizados(navController = navController, viewModel = viewModel) }
+                content = { AvailableRegisteredEvents(navController = navController, viewModel = viewModel) },
+                finishedContent = { FinishedRegisteredEvents(navController = navController, viewModel = viewModel) }
             )
         }
     }
 }
 
 @Composable
-fun EventosVigentes(navController: NavController, viewModel: HomeViewModel) {
-    val events by viewModel.events.collectAsState()
-    val availableEvents = events.filter { it.isAvailable }
+fun AvailableRegisteredEvents(navController: NavController, viewModel: UserEventsViewModel) {
+    val availableEvents = viewModel.getAvailableEvents()
 
     if (availableEvents.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
-                text = "No hay eventos disponibles",
+                text = "No tienes inscripciones activas",
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -139,7 +132,7 @@ fun EventosVigentes(navController: NavController, viewModel: HomeViewModel) {
             items(availableEvents) { event ->
                 CircularImageCard(
                     title = event.title,
-                    description = event.description,
+                    description = "${event.description}\nFecha: ${event.date}\nTurno: ${event.turnNumber}",
                     imageUrl = event.imageUrl,
                     isAvailable = event.isAvailable,
                     action = {
@@ -152,14 +145,13 @@ fun EventosVigentes(navController: NavController, viewModel: HomeViewModel) {
 }
 
 @Composable
-fun EventosFinalizados(navController: NavController, viewModel: HomeViewModel) {
-    val events by viewModel.events.collectAsState()
-    val finishedEvents = events.filter { !it.isAvailable }
+fun FinishedRegisteredEvents(navController: NavController, viewModel: UserEventsViewModel) {
+    val finishedEvents = viewModel.getFinishedEvents()
 
     if (finishedEvents.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
-                text = "No hay eventos finalizados",
+                text = "No tienes inscripciones finalizadas",
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -179,7 +171,7 @@ fun EventosFinalizados(navController: NavController, viewModel: HomeViewModel) {
                     CircularImageCard(
                         imageUrl = event.imageUrl,
                         title = event.title,
-                        description = event.description,
+                        description = "${event.description}\nFecha: ${event.date}\nEstado: ${event.status}",
                         isAvailable = event.isAvailable,
                         action = {
                             navController.navigate("EventsEnded/${event.id}")
@@ -189,10 +181,4 @@ fun EventosFinalizados(navController: NavController, viewModel: HomeViewModel) {
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun MyEventsScreenPreview() {
-    MyEventsScreen(navController = rememberNavController())
 }
