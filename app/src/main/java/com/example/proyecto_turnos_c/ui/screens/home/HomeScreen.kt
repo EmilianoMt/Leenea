@@ -46,6 +46,8 @@ fun HomeScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
+    val availableEvents = events.filter { it.isAvailable }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -101,13 +103,14 @@ fun HomeScreen(
             }
 
             if (!isLoading && error == null) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(events) { event ->
-                        if (event.isAvailable){
+                if (availableEvents.isNotEmpty()) {
+                    // Mostrar solo eventos disponibles
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(availableEvents) { event ->
                             Box(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
@@ -121,38 +124,23 @@ fun HomeScreen(
                                     }
                                 )
                             }
-                        }else {
-                            // cambiar para estilizar con un icono y texto
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = "No hay eventos disponibles",
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            }
                         }
                     }
-                }
-            }
-
-            if (!isLoading && error == null && events.isEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "No hay eventos disponibles",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                } else {
+                    // Mostrar mensaje cuando no hay eventos disponibles
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "No hay eventos disponibles",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
                 }
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    HomeScreen(navController = rememberNavController())
 }
