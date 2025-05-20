@@ -11,9 +11,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +23,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -40,8 +44,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.proyecto_turnos_c.R
+import com.example.proyecto_turnos_c.ui.components.navigationC.AdminNavBar
 import com.example.proyecto_turnos_c.viewmodels.RegisterViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddAmin(navController: NavController, registerViewModel: RegisterViewModel = viewModel()) {
     val registerState = registerViewModel.registerState
@@ -51,9 +57,37 @@ fun AddAmin(navController: NavController, registerViewModel: RegisterViewModel =
             navController.navigate("login")
         }
     }
-
-    Scaffold { innerPadding ->
-        RegisterForm(navController = navController, registerViewModel = registerViewModel, modifier = Modifier.padding(innerPadding))
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.height(84.dp),
+                title = {},
+                navigationIcon = {
+                    IconButton(
+                        onClick = {navController.navigate("adminEvents") },
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.ArrowBackIosNew,
+                            contentDescription = "Menú",
+                            tint = Color.Black,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+        }, bottomBar = {
+            AdminNavBar(navController = navController)
+        }
+    ) { innerPadding ->
+        RegisterForm(
+            navController = navController,
+            registerViewModel = registerViewModel,
+            modifier = Modifier.padding(innerPadding)
+        )
     }
 }
 
@@ -233,21 +267,8 @@ fun RegisterForm(navController: NavController, registerViewModel: RegisterViewMo
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA73B)),
         ) {
-            Text(text = "Registrarme", color = Color.White)
+            Text(text = "Registrar", color = Color.White)
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Enlace para ir a la pantalla de login
-        Text(
-            text = "Inicia Sesión",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color(0xFF191C88),
-            modifier = Modifier.clickable {
-                navController.navigate("login")
-            }
-        )
-
     }
 }
 

@@ -47,7 +47,7 @@ fun AdminEventsScreen(
                 title = {},
                 navigationIcon = {
                     IconButton(
-                        onClick = { /* Acción para el menú */ },
+                        onClick = {navController.navigate("adminEvents")},
                         modifier = Modifier.padding(start = 8.dp)
                     ) {
                         Icon(
