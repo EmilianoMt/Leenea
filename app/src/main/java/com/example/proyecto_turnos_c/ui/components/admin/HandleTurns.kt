@@ -43,7 +43,7 @@ fun HandleTurns(
                 onClick = { onScanClick() },
                 modifier = Modifier
                     .height(46.dp)
-                    .width(100.dp),
+                    .width(120.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFAB40)),
             ) {
@@ -64,7 +64,7 @@ fun HandleTurns(
                     .height(46.dp)
                     .width(120.dp),
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF191C88)),
             ) {
                 Text("Siguiente Turno")
             }

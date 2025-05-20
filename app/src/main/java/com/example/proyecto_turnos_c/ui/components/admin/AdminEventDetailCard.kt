@@ -51,9 +51,13 @@ fun AdminEventDetailCard(
     val isLoading by viewModel.isLoading.collectAsState()
     val scanResult by viewModel.scanResult.collectAsState()
     val scannedUserInfo by viewModel.scannedUserInfo.collectAsState()
+    val isEventAvailable by viewModel.isEventAvailable.collectAsState()
 
     // Estado para mostrar el escáner QR
     var showScanner by remember { mutableStateOf(false) }
+
+    // Estado para confirmar la finalización del evento
+    var showEndEventConfirmation by remember { mutableStateOf(false) }
 
     // Estado para los permisos de la cámara
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
@@ -170,7 +174,31 @@ fun AdminEventDetailCard(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(26.dp))
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Botón de terminar evento
+                if (isEventAvailable) {
+                    Button(
+                        onClick = { showEndEventConfirmation = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red
+                        )
+                    ) {
+                        Text("Terminar evento", color = Color.White)
+                    }
+                } else {
+                    Text(
+                        text = "Este evento ha finalizado",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Mostrar mensaje de error si existe
                 if (errorMessage != null) {
@@ -231,10 +259,31 @@ fun AdminEventDetailCard(
             }
         )
     }
+
+    // Diálogo de confirmación para terminar evento
+    if (showEndEventConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showEndEventConfirmation = false },
+            title = { Text("Confirmar finalización") },
+            text = { Text("¿Estás seguro de que deseas finalizar este evento? Esta acción no se puede deshacer.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.endEvent()
+                        showEndEventConfirmation = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text("Finalizar evento")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showEndEventConfirmation = false }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 }
-
-
-
-
-
-

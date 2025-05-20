@@ -26,6 +26,7 @@ data class NextTurnInfo(
     val expediente: String = ""
 )
 
+
 class AdminEventDetailCardViewModel(private val eventId: String) : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
     private val tag = "AdminEventDetailVM"
@@ -58,9 +59,29 @@ class AdminEventDetailCardViewModel(private val eventId: String) : ViewModel() {
     private val _cameraPermissionGranted = MutableStateFlow(false)
     val cameraPermissionGranted: StateFlow<Boolean> = _cameraPermissionGranted
 
+    // Estado para indicar si el evento está disponible
+    private val _isEventAvailable = MutableStateFlow(true)
+    val isEventAvailable: StateFlow<Boolean> = _isEventAvailable
+
     init {
         getCurrentTurn()
         getNextTurnInfo()
+        checkEventAvailability()
+    }
+
+    private fun checkEventAvailability() {
+        db.collection("events")
+            .document(eventId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    _errorMessage.value = "Error al verificar estado del evento: ${error.message}"
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    _isEventAvailable.value = snapshot.getBoolean("isAvailable") ?: true
+                }
+            }
     }
 
     private fun parseQRContent(qrContent: String): QRCodeData {
@@ -212,6 +233,26 @@ class AdminEventDetailCardViewModel(private val eventId: String) : ViewModel() {
             } catch (e: Exception) {
                 Log.e(tag, "Error al avanzar al siguiente turno", e)
                 _errorMessage.value = "Error al avanzar al siguiente turno: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun endEvent() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                // Actualizar el estado isAvailable a false en Firestore
+                db.collection("events")
+                    .document(eventId)
+                    .update("isAvailable", false)
+                    .await()
+
+                _errorMessage.value = "Evento finalizado exitosamente"
+            } catch (e: Exception) {
+                Log.e(tag, "Error al finalizar el evento", e)
+                _errorMessage.value = "Error al finalizar el evento: ${e.message}"
             } finally {
                 _isLoading.value = false
             }
