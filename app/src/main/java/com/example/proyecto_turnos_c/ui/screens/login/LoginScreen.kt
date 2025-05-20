@@ -1,8 +1,10 @@
+
 package com.example.proyecto_turnos_c.ui.screens.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -31,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -64,6 +67,7 @@ fun LoginForm(navController: NavController, loginViewModel: LoginViewModel ,modi
     val expedienteState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    val loginState = loginViewModel.loginState
 
     Column(
         modifier = modifier
@@ -95,13 +99,43 @@ fun LoginForm(navController: NavController, loginViewModel: LoginViewModel ,modi
             color = Color(0xFF191C88)
         )
         Spacer(modifier = Modifier.height(24.dp))
+
+        // Error message display
+        if (loginState.error != null) {
+            Text(
+                text = loginState.error,
+                color = Color.Red,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            )
+        }
+
         // Campo para correo electrónico
         OutlinedTextField(
             value = expedienteState.value,
-            onValueChange = { expedienteState.value = it },
+            onValueChange = {
+                expedienteState.value = it
+                // Clear error when user starts typing
+                if (loginState.error != null) {
+                    loginViewModel.clearError()
+                }
+            },
             label = { Text("Correo electrónico") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                    indication = null
+                ) {
+                    // Clear error when clicking on the field
+                    if (loginState.error != null) {
+                        loginViewModel.clearError()
+                    }
+                },
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color(0xFFFFA73B),
                 focusedLabelColor = Color(0xFFFFA73B),
@@ -109,13 +143,20 @@ fun LoginForm(navController: NavController, loginViewModel: LoginViewModel ,modi
                 unfocusedContainerColor = Color.Transparent,
                 focusedTextColor = Color(0xFF191C88),
                 unfocusedTextColor = Color.Gray
-            )
+            ),
+            isError = loginState.error != null
         )
         Spacer(modifier = Modifier.height(16.dp))
         // Campo para Contraseña
         OutlinedTextField(
             value = passwordState.value,
-            onValueChange = { passwordState.value = it },
+            onValueChange = {
+                passwordState.value = it
+                // Clear error when user starts typing
+                if (loginState.error != null) {
+                    loginViewModel.clearError()
+                }
+            },
             label = { Text("Contraseña") },
             singleLine = true,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -127,7 +168,17 @@ fun LoginForm(navController: NavController, loginViewModel: LoginViewModel ,modi
                     )
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    // Clear error when clicking on the field
+                    if (loginState.error != null) {
+                        loginViewModel.clearError()
+                    }
+                },
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color(0xFFFFA73B),
                 focusedLabelColor = Color(0xFFFFA73B),
@@ -135,16 +186,16 @@ fun LoginForm(navController: NavController, loginViewModel: LoginViewModel ,modi
                 unfocusedContainerColor = Color.Transparent,
                 focusedTextColor = Color(0xFF191C88),
                 unfocusedTextColor = Color.Gray
-            )
+            ),
+            isError = loginState.error != null
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (loginViewModel.loginState.loading){
+        if (loginState.loading){
             CircularProgressIndicator(modifier = Modifier
                 .padding(16.dp))
         }
 
-        // Botón de inicio de sesión: navega a "home"
         Button(
             onClick = {
                 loginViewModel.loginUser(
@@ -153,12 +204,12 @@ fun LoginForm(navController: NavController, loginViewModel: LoginViewModel ,modi
                 )
             },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA73B))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA73B)),
+//            enabled = !loginState.loading && expedienteState.value.isNotEmpty() && passwordState.value.isNotEmpty()
         ) {
             Text(text = "Iniciar sesión", color = Color.White)
         }
         Spacer(modifier = Modifier.height(16.dp))
-        // Enlace de registro que navega a la pantalla "register"
         Text(
             text = "Registrate",
             style = MaterialTheme.typography.bodyMedium,
@@ -168,10 +219,4 @@ fun LoginForm(navController: NavController, loginViewModel: LoginViewModel ,modi
             }
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginPreview() {
-    Login(navController = rememberNavController())
 }
