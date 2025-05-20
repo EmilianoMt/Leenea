@@ -1,6 +1,5 @@
 package com.example.proyecto_turnos_c.viewmodels
 
-
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,6 +23,18 @@ class LoginViewModel : ViewModel(){
         private set
 
     fun loginUser(email: String, password: String){
+        // Validate inputs first
+        if (email.isBlank()) {
+            loginState = loginState.copy(error = "El correo electrónico no puede estar vacío")
+            return
+        }
+
+        if (password.isBlank()) {
+            loginState = loginState.copy(error = "La contraseña no puede estar vacía")
+            return
+        }
+
+        // Start login process
         loginState = loginState.copy(loading = true, error = null, success = false, userRole = "")
 
         auth.signInWithEmailAndPassword(email, password)
@@ -38,16 +49,35 @@ class LoginViewModel : ViewModel(){
                                 loginState = loginState.copy(loading = false, success = true, userRole = role)
                             }
                             .addOnFailureListener{ e ->
-                                loginState = loginState.copy(loading = false, error = e.message)
+                                loginState = loginState.copy(loading = false, error = "Error al obtener el rol: ${e.message}")
                             }
                     }
                 }
-                else{
+                else {
+                    val errorMessage = when (task.exception) {
+                        is com.google.firebase.auth.FirebaseAuthInvalidUserException ->
+                            "Usuario y/o contraseña incorrectos"
+                        is com.google.firebase.auth.FirebaseAuthInvalidCredentialsException ->
+                            "Usuario y/o contraseña incorrectos"
+                        is com.google.firebase.auth.FirebaseAuthWebException ->
+                            "Error de conexión. Verifica tu conexión a internet"
+                        is com.google.firebase.auth.FirebaseAuthUserCollisionException ->
+                            "Esta cuenta ya está en uso con otro proveedor"
+                        is com.google.firebase.FirebaseTooManyRequestsException ->
+                            "Demasiados intentos fallidos. Intenta más tarde"
+                        else ->
+                            "Usuario y/o contraseña incorrectos"
+                    }
+
                     loginState = loginState.copy(
                         loading = false,
-                        error = task.exception?.message ?: "Login fallido"
+                        error = errorMessage
                     )
                 }
             }
+    }
+
+    fun clearError() {
+        loginState = loginState.copy(error = null)
     }
 }
