@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.proyecto_turnos_c.ui.screens.NotificatonsScreen
 import com.example.proyecto_turnos_c.ui.screens.addAdmin.AddAmin
 import com.example.proyecto_turnos_c.ui.screens.adminAddEvent.AdminAddEventsScreen
 import com.example.proyecto_turnos_c.ui.screens.adminEvents.AdminEventsScreen
@@ -14,7 +15,6 @@ import com.example.proyecto_turnos_c.ui.screens.eventsDescription.EventsDescScre
 import com.example.proyecto_turnos_c.ui.screens.eventsEnded.EventsEndedScreen
 import com.example.proyecto_turnos_c.ui.screens.home.HomeScreen
 import com.example.proyecto_turnos_c.ui.screens.login.Login
-import com.example.proyecto_turnos_c.ui.screens.notifications.NotificatonsScreen
 import com.example.proyecto_turnos_c.ui.screens.profile.ProfileScreen
 import com.example.proyecto_turnos_c.ui.screens.register.Register
 import com.example.proyecto_turnos_c.ui.screens.userEvents.MyEventsScreen
@@ -29,7 +29,14 @@ fun NavigationGraph(startDestination: String = "login") {
         composable("home") { HomeScreen(navController) }
         composable("profile") { ProfileScreen(navController) }
         composable("myEvents") { MyEventsScreen(navController) }
-        composable("notifications") { NotificatonsScreen(navController) }
+
+        composable("notifications") {backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            NotificatonsScreen(
+                userId = userId,
+                navController = navController,
+            )
+        }
         composable(
             route = "EventsEnded/{eventId}",
             arguments = listOf(navArgument("eventId") { type = NavType.StringType })

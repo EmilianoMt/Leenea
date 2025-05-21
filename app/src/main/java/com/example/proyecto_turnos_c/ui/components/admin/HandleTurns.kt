@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material.icons.outlined.SubdirectoryArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.proyecto_turnos_c.viewmodels.NextTurnInfo
 
@@ -47,9 +49,13 @@ fun HandleTurns(
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFAB40)),
             ) {
-                Text("Escanea")
+                Text(
+                    text = "Escanea",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White
+                )
                 Icon(
-                    imageVector = Icons.Outlined.SubdirectoryArrowRight,
+                    imageVector = Icons.Outlined.QrCode,
                     contentDescription = "Icono de ingreso",
                     tint = Color.White,
                     modifier = Modifier.padding(start = 8.dp)
@@ -66,7 +72,12 @@ fun HandleTurns(
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF191C88)),
             ) {
-                Text("Siguiente Turno")
+                Text(
+                    text = "Siguiente Turno",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
             }
         }
 
