@@ -28,12 +28,10 @@ fun Notification(
     title: String,
     message: String,
     timestamp: String,
-    isSuccess: Boolean, 
+    isSuccess: Boolean,
     modifier: Modifier = Modifier
 ) {
-    // Selección de ícono
     val iconImage = if (isSuccess) Icons.Filled.CheckCircle else Icons.Filled.Info
-//    val iconTint = if (isSuccess) Color(0xFF4CAF50) else Color.White
 
     Card(
         modifier = modifier

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.proyecto_turnos_c.services.NotificationService
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,7 @@ data class NextTurnInfo(
 
 class AdminEventDetailCardViewModel(private val eventId: String) : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
+    private val notificationService = NotificationService()
     private val tag = "AdminEventDetailVM"
 
     // Estado para el turno actual
@@ -63,10 +65,30 @@ class AdminEventDetailCardViewModel(private val eventId: String) : ViewModel() {
     private val _isEventAvailable = MutableStateFlow(true)
     val isEventAvailable: StateFlow<Boolean> = _isEventAvailable
 
+    // Información del evento
+    private val _eventName = MutableStateFlow("")
+    private val _eventLocation = MutableStateFlow("")
+
     init {
         getCurrentTurn()
         getNextTurnInfo()
         checkEventAvailability()
+        loadEventInfo()
+    }
+
+    private fun loadEventInfo() {
+        db.collection("events")
+            .document(eventId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    _eventName.value = document.getString("name") ?: "Evento"
+                    _eventLocation.value = document.getString("location") ?: ""
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e(tag, "Error getting event info", e)
+            }
     }
 
     private fun checkEventAvailability() {
@@ -249,7 +271,20 @@ class AdminEventDetailCardViewModel(private val eventId: String) : ViewModel() {
                     .update("isAvailable", false)
                     .await()
 
-                _errorMessage.value = "Evento finalizado exitosamente"
+                // Enviar notificación a todos los usuarios registrados en el evento
+                val success = notificationService.sendNotificationToEventUsers(
+                    eventId = eventId,
+                    eventName = _eventName.value,
+                    title = "Evento finalizado",
+                    message = "El evento '${_eventName.value}' ha finalizado. Gracias por participar.",
+                    isSuccess = true
+                )
+
+                if (success) {
+                    _errorMessage.value = "Evento finalizado exitosamente y notificaciones enviadas"
+                } else {
+                    _errorMessage.value = "Evento finalizado pero hubo problemas al enviar notificaciones"
+                }
             } catch (e: Exception) {
                 Log.e(tag, "Error al finalizar el evento", e)
                 _errorMessage.value = "Error al finalizar el evento: ${e.message}"
@@ -326,6 +361,15 @@ class AdminEventDetailCardViewModel(private val eventId: String) : ViewModel() {
                                 // Marcar como atendido
                                 registration.reference.update("status", "attended")
                                 _errorMessage.value = "Usuario con turno actual identificado correctamente"
+
+                                // Enviar notificación al usuario
+                                notificationService.sendNotificationToUser(
+                                    userId = userIdToSearch,
+                                    title = "Turno atendido",
+                                    message = "Has sido atendido en el evento '${_eventName.value}'",
+                                    isSuccess = true,
+                                    eventId = eventId
+                                )
                             }
                             userStatus == "attended" -> {
                                 _errorMessage.value = "Este usuario ya fue atendido"
