@@ -64,19 +64,19 @@ fun HomeScreen(
                         )
                     }
                 },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigate("notifications") }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Notifications,
-                            contentDescription = "Notificaciones",
-                            tint = Color.Black,
-                            modifier = Modifier.size(30.dp)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
+//                navigationIcon = {
+//                    IconButton(onClick = { navController.navigate("notifications") }) {
+//                        Icon(
+//                            imageVector = Icons.Outlined.Notifications,
+//                            contentDescription = "Notificaciones",
+//                            tint = Color.Black,
+//                            modifier = Modifier.size(30.dp)
+//                        )
+//                    }
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = Color.Transparent
+//                )
             )
         },
         bottomBar = { NavBar(navController = navController) }
